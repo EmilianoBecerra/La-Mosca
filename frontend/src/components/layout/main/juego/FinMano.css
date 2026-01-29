@@ -1,0 +1,111 @@
+.fin-mano-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: 2rem;
+}
+
+.fin-mano-card {
+    background: linear-gradient(145deg, var(--color-surface) 0%, #1f1f1f 100%);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+    animation: scaleIn 0.4s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.fin-mano-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.fin-mano-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.fin-mano-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    color: var(--color-text);
+}
+
+.puntuacion {
+    margin-bottom: 2rem;
+}
+
+.puntuacion h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.jugadores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.jugador-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.jugador-row.yo {
+    border-color: var(--color-primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.jugador-row .posicion {
+    font-size: 1.25rem;
+    min-width: 30px;
+}
+
+.jugador-row .nombre {
+    flex: 1;
+    text-align: left;
+    font-weight: 500;
+}
+
+.jugador-row .puntos {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.fin-mano-actions {
+    padding-top: 1rem;
+}
+
+.contador-texto {
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.fin-mano-actions button {
+    width: 100%;
+}

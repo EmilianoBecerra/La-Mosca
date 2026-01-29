@@ -1,0 +1,40 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend para juego de cartas multijugador online en tiempo real llamado la mosca",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "author": "Emiliano Becerra",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongodb": "^6.21.0",
+    "mongoose": "^8.21.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "standard": "^17.1.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "commonjs": true
+    },
+    "extends": [
+      "standard"
+    ],
+    "rules": {
+      "semi": [
+        "error",
+        "always"
+      ],
+      "quotes": [
+        "error",
+        "double"
+      ]
+    }
+  }
+}
