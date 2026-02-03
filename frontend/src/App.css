@@ -90,3 +90,37 @@
   background: #ccc;
   cursor: not-allowed;
 }
+
+@media (max-width: 480px) {
+  #root {
+    padding: 12px;
+  }
+
+  .layout {
+    gap: 16px;
+  }
+
+  .modal-inicio {
+    padding: 28px 20px;
+    width: 92%;
+  }
+
+  .modal-inicio h2 {
+    font-size: 22px;
+  }
+
+  .modal-inicio p {
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+
+  .modal-inicio input {
+    padding: 12px 14px;
+    font-size: 16px;
+  }
+
+  .modal-inicio button {
+    padding: 14px 20px;
+    min-height: 48px;
+  }
+}

@@ -92,12 +92,14 @@
     background: rgba(239, 68, 68, 0.2);
     color: #fca5a5;
     border: 1px solid rgba(239, 68, 68, 0.4);
-    padding: 0.35rem 0.75rem;
+    padding: 0.5rem 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+    min-height: 40px;
+    touch-action: manipulation;
 }
 
 .btn-abandonar:hover {
@@ -505,34 +507,158 @@
     border-radius: 8px;
 }
 
-/* Responsive */
+/* Responsive tablet */
 @media (max-width: 768px) {
+    .juego-container {
+        padding: 0.75rem;
+    }
+
     .info-mesa {
-        flex-direction: column;
-        gap: 0.75rem;
-        text-align: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        padding: 0.6rem 1rem;
     }
 
     .info-left {
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.25rem;
+    }
+
+    .info-left h2 {
+        font-size: 1.1rem;
     }
 
     .carta {
-        width: 55px;
-        height: 80px;
+        width: 58px;
+        height: 84px;
     }
 
     .carta .numero {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
     }
 
     .carta .palo-icon {
         font-size: 1rem;
     }
 
+    .carta:hover {
+        transform: translateY(-8px) scale(1.03);
+    }
+
+    .carta.seleccionada {
+        transform: translateY(-16px) scale(1.05);
+    }
+
     .jugador-rival {
         min-width: 80px;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .jugador-rival .avatar {
+        font-size: 1.5rem;
+    }
+
+    .tablero-centro {
+        min-height: 140px;
+    }
+
+    .cartas-ronda,
+    .cartas-ronda-resultado {
+        gap: 0.75rem;
+    }
+
+    .resultado-icon {
+        font-size: 2.25rem;
+    }
+
+    .resultado-ronda h4 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Responsive mobile */
+@media (max-width: 480px) {
+    .juego-container {
         padding: 0.5rem;
+        min-height: calc(100vh - 160px);
+    }
+
+    .info-mesa {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .triunfo {
+        font-size: 0.85rem;
+    }
+
+    .fase-badge,
+    .ronda-info {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+    }
+
+    .carta {
+        width: 52px;
+        height: 76px;
+    }
+
+    .carta .numero {
+        font-size: 1.1rem;
+    }
+
+    .carta .palo-icon {
+        font-size: 0.9rem;
+    }
+
+    .mano {
+        gap: 0.35rem;
+        padding: 0.25rem;
+    }
+
+    .otros-jugadores {
+        gap: 0.5rem;
+        padding: 0.25rem;
+    }
+
+    .jugador-rival {
+        min-width: 70px;
+        padding: 0.4rem 0.5rem;
+    }
+
+    .jugador-rival .nombre {
+        font-size: 0.8rem;
+    }
+
+    .jugador-stats {
+        font-size: 0.7rem;
+        gap: 0.5rem;
+    }
+
+    .mis-cartas-area {
+        padding: 0.75rem;
+        border-radius: 12px;
+    }
+
+    .mi-info {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .mi-info h3 {
+        font-size: 1rem;
+    }
+
+    .acciones button {
+        min-width: 120px;
+        width: 100%;
+    }
+
+    .btn-abandonar {
+        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
     }
 }

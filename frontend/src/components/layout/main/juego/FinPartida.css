@@ -132,4 +132,38 @@
 
 .fin-actions button {
     width: 100%;
+    min-height: 44px;
+}
+
+@media (max-width: 480px) {
+    .fin-partida-container {
+        padding: 1rem;
+        min-height: calc(100vh - 160px);
+    }
+
+    .fin-partida-card {
+        padding: 1.25rem;
+    }
+
+    .resultado-emoji {
+        font-size: 3rem;
+    }
+
+    .resultado-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .jugador-row {
+        padding: 0.6rem 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .jugador-row .posicion {
+        font-size: 1.1rem;
+        min-width: 24px;
+    }
+
+    .ganador-nombre {
+        font-size: 1rem;
+    }
 }

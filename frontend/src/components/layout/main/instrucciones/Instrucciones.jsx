@@ -18,34 +18,62 @@ export function Instrucciones() {
 
             <div className="instrucciones-content">
                 <section className="seccion">
-                    <h3>Objetivo del Juego</h3>
                     <p>
-                      Cada jugador comienza con 20 puntos y pierde 1 punto por cada ronda ganada.
-                      El objetivo es <strong>llegar a 0 puntos.</strong>. 
+                        Bienvenidos a la Mosca, un juego argentino multijugador online en tiempo real.
                     </p>
                 </section>
 
                 <section className="seccion">
-                    <h3>Jugadores y Cartas</h3>
-                    <ul>
-                        <li>De <strong>2 a 6 jugadores</strong> por mesa</li>
-                        <li>Se usa un mazo español de <strong>48 cartas</strong> (4 palos, 12 cartas cada uno)</li>
-                        <li>Palos: Oro, Espada, Basto y Copa</li>
-                        <li>Cada jugador recibe <strong>5 cartas</strong></li>
-                    </ul>
+                    <h3>Modo de Juego</h3>
+                    <ol>
+                        <li>
+                            Se reparten <strong>5 cartas</strong> a cada jugador, como mínimo puede haber
+                            <strong> 2 jugadores</strong> y como máximo <strong>6</strong>, de un mazo de cartas
+                            españolas completo menos los comodines. Cada jugador comienza la partida con
+                            <strong> 20 puntos</strong>.
+                        </li>
+                        <li>
+                            Cuando todos los jugadores tienen sus cartas comienza la <strong>fase de descarte</strong>:
+                            <ul>
+                                <li>
+                                    Cada jugador tiene la posibilidad de descartar las cartas que no le interesan,
+                                    también puede rechazar el descarte y quedarse con todas las cartas.
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Una vez que todos descartan, se vuelven a repartir para que todos los jugadores
+                            queden con 5 cartas en la mano.
+                        </li>
+                        <li>Empieza la primera ronda.</li>
+                        <li>
+                            Cada jugador tirará una carta empezando por el que le sigue a quién repartió.
+                        </li>
+                        <li>
+                            Luego, se determina quién ganó la ronda según el <strong>sistema de valor</strong>.
+                        </li>
+                        <li>Al ganador de la ronda se le <strong>resta un punto</strong>.</li>
+                        <li>
+                            Al tirar las cinco cartas, se completa una mano. Quien no haya ganado
+                            alguna ronda, se le <strong>suman cinco puntos</strong>.
+                        </li>
+                        <li>Se vuelven a repetir los pasos desde el punto dos.</li>
+                        <li>El primero que llegue a <strong>0 gana</strong>.</li>
+                    </ol>
                 </section>
 
                 <section className="seccion">
-                    <h3>El Triunfo</h3>
+                    <h3>Sistema de Valor de las Cartas</h3>
                     <p>
-                        Al repartir, la <strong>última carta del repartidor</strong> determina el palo de triunfo.
-                        Las cartas de triunfo <strong>ganan a cualquier otro palo</strong>.
+                        Al repartir las cartas, la última carta repartida determina el <strong>palo del triunfo</strong>,
+                        que es el palo más fuerte. Luego se determina por el número de la carta, siendo
+                        el 1 el más fuerte, luego el 3, y luego del 12 al 2.
                     </p>
-                </section>
-
-                <section className="seccion">
-                    <h3>Fuerza de las Cartas</h3>
-                    <p>De mayor a menor fuerza:</p>
+                    <p className="nota">
+                        <strong>Palo:</strong> Triunfo &gt; cualquier otro palo.
+                        Si no se juega ningún triunfo en la ronda, el primer palo jugado será el de mayor valor.
+                    </p>
+                    <p><strong>Número:</strong></p>
                     <div className="fuerza-cartas">
                         <span className="carta-fuerte">1</span>
                         <span>&gt;</span>
@@ -71,47 +99,6 @@ export function Instrucciones() {
                         <span>&gt;</span>
                         <span className="carta-debil">2</span>
                     </div>
-                    <p className="nota">El 1 (As) es la carta mas fuerte, el 2 es la mas debil.</p>
-                </section>
-
-                <section className="seccion">
-                    <h3>Fase de Descarte</h3>
-                    <p>
-                        Antes de jugar, cada jugador puede <strong>descartar cartas</strong> de su mano
-                        y recibir nuevas del mazo. Esto es opcional.
-                    </p>
-                    <ul>
-                        <li>Selecciona las cartas que quieras descartar</li>
-                        <li>Presiona "Descartar" para confirmar</li>
-                        <li>O presiona "No descartar" para quedarte con tus cartas</li>
-                    </ul>
-                </section>
-
-                <section className="seccion">
-                    <h3>Como se Juega</h3>
-                    <ol>
-                        <li>El jugador a la derecha del repartidor comienza</li>
-                        <li>Cada jugador juega <strong>una carta</strong> en su turno</li>
-                        <li>Cuando todos jugaron, se determina el ganador de la ronda</li>
-                        <li>El ganador de la ronda <strong>pierde 1 punto</strong> y comienza la siguiente</li>
-                        <li>Se juegan <strong>5 rondas</strong> por mano (hasta agotar las cartas)</li>
-                    </ol>
-                </section>
-
-                <section className="seccion">
-                    <h3>Quien Gana la Ronda</h3>
-                    <ul>
-                        <li>Si hay cartas de <strong>triunfo</strong>, gana la carta de triunfo mas fuerte</li>
-                        <li>Si no hay triunfos, gana la carta mas fuerte <strong>del palo de salida</strong> (el palo de la primera carta jugada)</li>
-                    </ul>
-                </section>
-
-                <section className="seccion">
-                    <h3>Fin de la Mano</h3>
-                    <p>
-                        Cuando se juegan las 5 rondas, termina la mano.
-                        El repartidor rota al siguiente jugador y comienza una nueva mano.
-                    </p>
                 </section>
             </div>
         </div>

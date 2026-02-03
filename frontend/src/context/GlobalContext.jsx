@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useRef } from "react";
+import { createContext, useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -10,46 +10,112 @@ const crearSocket = () => {
 
 export const GlobalContextProvider = (props) => {
   const socketRef = useRef(crearSocket());
+  const mesaPendienteRef = useRef(null);
 
   const [mesas, setMesas] = useState([]);
   const [mesa, setMesa] = useState(null);
   const [estadoPantalla, setEstadoPantalla] = useState("lobby");
   const [mesaId, setMesaId] = useState("");
+  const [nombreGuardado, setNombreGuardado] = useState(() => {
+    return localStorage.getItem("nombreJugador") || "";
+  });
   const [nombreJugador, setNombreJugador] = useState(() => {
     return localStorage.getItem("nombreJugador") || "";
   });
+  const [autenticado, setAutenticado] = useState(false);
 
-  const guardarNombreJugador = (nombre) => {
+  const guardarCredenciales = useCallback((nombre, codigo) => {
     localStorage.setItem("nombreJugador", nombre);
+    if (codigo) {
+      localStorage.setItem("codigoJugador", codigo);
+    }
     setNombreJugador(nombre);
-  };
+    setNombreGuardado(nombre);
+    setAutenticado(true);
+  }, []);
+
+  const cerrarSesion = useCallback(() => {
+    localStorage.removeItem("nombreJugador");
+    localStorage.removeItem("codigoJugador");
+    setNombreJugador("");
+    setNombreGuardado("");
+    setAutenticado(false);
+    setMesa(null);
+    setMesaId("");
+    setEstadoPantalla("lobby");
+  }, []);
   const [error, setError] = useState("");
   const [rondaActual, setRondaActual] = useState([]);
+  const rondaActualRef = useRef(rondaActual);
+
+  useEffect(() => {
+    rondaActualRef.current = rondaActual;
+  }, [rondaActual]);
+
   const [resultadoRonda, setResultadoRonda] = useState(null);
   const [finPartida, setFinPartida] = useState(null);
   const [modal, setModal] = useState({ visible: false, mensaje: "", tipo: "info" });
 
-  const mostrarModal = (mensaje, tipo = "info") => {
+  const mostrarModal = useCallback((mensaje, tipo = "info") => {
     setModal({ visible: true, mensaje, tipo });
-  };
+  }, []);
 
   const cerrarModal = () => {
     setModal({ visible: false, mensaje: "", tipo: "info" });
   };
-  const registrarJugador = (nombre) => {
-    socketRef.current.emit("registrar-jugador", nombre);
+  const codigoTempRef = useRef(null);
+
+  const registrarJugador = (nombre, codigo) => {
+    codigoTempRef.current = codigo;
+    socketRef.current.emit("registrar-jugador", nombre, codigo);
   };
-  const obtenerJugador = (id) => {
-    socketRef.current.emit("obtener-jugador", id);
+
+  const loginJugador = (nombre, codigo) => {
+    codigoTempRef.current = codigo;
+    socketRef.current.emit("login", nombre, codigo);
   };
-  const configurarListeners = (sock) => {
+  const configurarListeners = useCallback((sock) => {
     sock.on("mesas-disponibles", (mesas) => {
       setMesas(mesas);
+      if (mesaPendienteRef.current) {
+        const mesaEncontrada = mesas.find(m => m.nombre === mesaPendienteRef.current);
+        if (mesaEncontrada) {
+          setMesa(mesaEncontrada);
+          setMesaId(mesaEncontrada._id || mesaEncontrada.nombre);
+          setEstadoPantalla("mesa");
+          mesaPendienteRef.current = null;
+        }
+      }
     });
-    sock.on("mesa-creada", (nuevaMesa) => {
-      setMesa(nuevaMesa);
-      setMesaId(nuevaMesa._id);
-      setEstadoPantalla("mesa");
+    sock.on("mesa_creada_exito", (nombreMesa) => {
+      mesaPendienteRef.current = nombreMesa;
+      setMesas(prev => {
+        const mesaEncontrada = prev.find(m => m.nombre === nombreMesa);
+        if (mesaEncontrada) {
+          setMesa(mesaEncontrada);
+          setMesaId(mesaEncontrada._id || mesaEncontrada.nombre);
+          setEstadoPantalla("mesa");
+          mesaPendienteRef.current = null;
+        }
+        return prev;
+      });
+    });
+    sock.on("jugador-enMesa", (data) => {
+      if (typeof data === 'object' && data !== null && data.jugadores) {
+        setMesa(prev => {
+          // Solo mostrar modal si intenta entrar a una mesa diferente o crear otra
+          if (prev && prev.nombre !== data.nombre) {
+            mostrarModal(`Ya estás en la mesa "${data.nombre}". Salí de ella para unirte a otra.`, "info");
+          } else if (!prev) {
+            // Si no tiene mesa en el estado pero el servidor dice que sí está en una
+            mostrarModal(`Ya estás en la mesa "${data.nombre}". Salí de ella para crear o unirte a otra.`, "info");
+          }
+          // Si prev.nombre === data.nombre, no mostrar modal (ya está en esa mesa)
+          return data;
+        });
+        setMesaId(data._id || data.nombre);
+        setEstadoPantalla("mesa");
+      }
     });
     sock.on("actualizar-mesa", (mesaActualizada) => {
       setMesa(mesaActualizada);
@@ -58,15 +124,6 @@ export const GlobalContextProvider = (props) => {
       setMesa(mesaRecibida);
       setMesaId(mesaRecibida._id);
       setEstadoPantalla("mesa");
-    });
-    sock.on("mesa-jugador", (mesaRecibida) => {
-      setMesa(mesaRecibida);
-      setMesaId(mesaRecibida._id);
-      setEstadoPantalla("mesa");
-    });
-    sock.on("jugador-existente", (jugador) => {
-      localStorage.setItem("odId", jugador._id);
-      guardarNombreJugador(jugador.nombre);
     });
     sock.on("jugador-nuevo", (jugador) => {
       setMesa(prev => {
@@ -77,28 +134,19 @@ export const GlobalContextProvider = (props) => {
         };
       });
     });
-    sock.on("iniciar-partida", (mesaPartida) => {
-      setMesa(mesaPartida);
-      setRondaActual([]);
-      setEstadoPantalla("en-partida");
+    sock.on("carta-jugada", ({ nombre, carta }) => {
+      setRondaActual(prev => [...prev, { nombre, carta }]);
     });
-    sock.on("carta-jugada", ({ id, carta }) => {
-      setRondaActual(prev => [...prev, { id, carta }]);
-    });
-    sock.on("ronda-terminada", ({ ganador, cartaGanadora }) => {
+    sock.on("ronda-terminada", ({ ganador, cartaGanadora, cartasJugadas }) => {
       setResultadoRonda({
         ganador,
         cartaGanadora,
-        cartasJugadas: [...rondaActual]
+        cartasJugadas: cartasJugadas || [...rondaActualRef.current]
       });
       setTimeout(() => {
         setRondaActual([]);
         setResultadoRonda(null);
       }, 2000);
-    });
-    sock.on("fase-descarte", (mesaActualizada) => {
-      setMesa(mesaActualizada);
-      setRondaActual([]);
     });
     sock.on("esperando-descarte", (mesaActualizada) => {
       setMesa(mesaActualizada);
@@ -106,13 +154,14 @@ export const GlobalContextProvider = (props) => {
     });
     sock.on("listos-jugar", (mesaActualizada) => {
       setMesa(mesaActualizada);
+      setRondaActual([]);
       setEstadoPantalla("en-partida");
     });
     sock.on("fin-mano", (mesaActualizada) => {
       setMesa(mesaActualizada);
       setTimeout(() => {
         setEstadoPantalla("fin-mano");
-      }, 3000);
+      }, 1500);
     });
     sock.on("fin-partida", ({ ganador, jugadores }) => {
       setFinPartida({ ganador, jugadores });
@@ -121,22 +170,21 @@ export const GlobalContextProvider = (props) => {
     sock.on("error", (msg) => {
       setError(msg);
       mostrarModal(msg, "error");
+      if (msg === "Jugador no existe" || msg === "Codigo incorrecto o jugador no existe.") {
+        cerrarSesion(); // Borra nombreGuardado, App.jsx mostrará registro automáticamente
+      }
     });
     sock.on("jugador-registrado", (jugador) => {
-      localStorage.setItem("odId", jugador._id);
-      guardarNombreJugador(jugador.nombre);
+      guardarCredenciales(jugador.nombre, codigoTempRef.current);
     });
-    sock.on("info-jugador", (jugador) => {
-      localStorage.setItem("odId", jugador._id);
-      guardarNombreJugador(jugador.nombre);
+    sock.on("loguear-jugador", (jugador) => {
+      guardarCredenciales(jugador.nombre, codigoTempRef.current);
     });
     sock.on("error-registro", (msg) => {
       setError(msg);
       mostrarModal(msg, "error");
       if (msg === "Error al registrar usuario en base de datos.") {
-        localStorage.removeItem("odId");
-        localStorage.removeItem("nombreJugador");
-        setNombreJugador("");
+        cerrarSesion();
       }
     });
     sock.on("saliste-mesa", () => {
@@ -154,71 +202,90 @@ export const GlobalContextProvider = (props) => {
     });
     sock.on("reconectar-partida", (mesaRecibida) => {
       setMesa(mesaRecibida);
-      setMesaId(mesaRecibida._id);
-      setEstadoPantalla("en-partida");
+      setMesaId(mesaRecibida._id || mesaRecibida.nombre);
+      setRondaActual([]);
+      const estado = mesaRecibida.estado;
+      if (estado === "descarte") {
+        setEstadoPantalla("descarte");
+      } else if (estado === "en-partida") {
+        setEstadoPantalla("en-partida");
+      } else if (estado === "fin-mano") {
+        setEstadoPantalla("fin-mano");
+      } else {
+        setEstadoPantalla("mesa");
+      }
     });
-  };
+  }, [cerrarSesion, guardarCredenciales, mostrarModal]);
 
   const crearMesa = (nombreMesa) => {
-    const idCreador = localStorage.getItem("odId");
-    if (!idCreador) {
-      console.error("No hay jugador registrado (odId no existe en localStorage)");
+    const nombre = localStorage.getItem("nombreJugador");
+    if (!nombre) {
+      console.error("No hay jugador registrado");
       return;
     }
-    socketRef.current.emit("crear-mesa", idCreador, nombreMesa);
+    socketRef.current.emit("crear-mesa", nombre, nombreMesa);
   };
 
-  const unirseMesa = (idMesa) => {
-    const idJugador = localStorage.getItem("odId");
-    setMesaId(idMesa);
-    socketRef.current.emit("registrar-en-mesa", idJugador, idMesa);
+  const unirseMesa = (nombreMesa) => {
+    const nombre = localStorage.getItem("nombreJugador");
+    if (!nombre) {
+      console.error("No hay jugador registrado");
+      return;
+    }
+    socketRef.current.emit("ingresar-en-mesa", nombre, nombreMesa);
   };
 
   const jugadorListo = () => {
-    const idJugador = localStorage.getItem("odId");
-    if (idJugador) {
-      socketRef.current.emit("jugador-listo", idJugador);
+    const nombre = localStorage.getItem("nombreJugador");
+    if (nombre) {
+      socketRef.current.emit("jugador-listo", nombre);
     }
   };
 
   const descartarCartas = (indices) => {
-    const idJugador = localStorage.getItem("odId");
-    if (mesa && mesa._id && idJugador) {
-      socketRef.current.emit("descarte", idJugador, indices, mesa._id);
+    const nombre = localStorage.getItem("nombreJugador");
+    if (mesa && mesa._id && nombre) {
+      socketRef.current.emit("descarte", nombre, indices, mesa.nombre);
     }
   };
 
   const jugarCarta = (carta) => {
-    const idJugador = localStorage.getItem("odId");
-    if (mesa && mesa._id && idJugador) {
-      socketRef.current.emit("jugar-carta", { idMesa: mesa._id, idJugador, carta });
+    const nombre = localStorage.getItem("nombreJugador");
+    if (mesa && mesa._id && nombre) {
+      socketRef.current.emit("jugar-carta", { nombreMesa: mesa.nombre, nombreJugador: nombre, carta });
     }
   };
 
   const salirMesa = () => {
-    const idJugador = localStorage.getItem("odId");
-    if (idJugador) {
-      socketRef.current.emit("salir-mesa", idJugador);
+    const nombre = localStorage.getItem("nombreJugador");
+    if (nombre) {
+      socketRef.current.emit("salir-mesa", nombre);
     }
   };
 
   const nuevaMano = () => {
     if (mesa && mesa._id) {
-      socketRef.current.emit("nueva-mano", mesa._id.toString());
+      socketRef.current.emit("nueva-mano", mesa.nombre);
     }
   };
 
   useEffect(() => {
-    configurarListeners(socketRef.current);
-    const idGuardado = localStorage.getItem("odId");
-    if (idGuardado) {
-      socketRef.current.emit("obtener-jugador", idGuardado);
+    const socket = socketRef.current;
+    configurarListeners(socket);
+
+    // Auto-login si hay credenciales guardadas
+    const nombreGuardado = localStorage.getItem("nombreJugador");
+    const codigoGuardado = localStorage.getItem("codigoJugador");
+
+    if (nombreGuardado && codigoGuardado) {
+      codigoTempRef.current = codigoGuardado;
+      socket.emit("login", nombreGuardado, codigoGuardado);
     }
 
     return () => {
-      socketRef.current.removeAllListeners();
+      socket.removeAllListeners();
     };
-  }, []);
+  }, [configurarListeners]);
   useEffect(() => {
     const enMesaOPartida = (estadoPantalla === "en-partida" || estadoPantalla === "mesa") && mesa?._id;
 
@@ -232,9 +299,9 @@ export const GlobalContextProvider = (props) => {
 
     const handleUnload = () => {
       if (enMesaOPartida) {
-        const idJugador = localStorage.getItem("odId");
-        if (idJugador) {
-          socketRef.current.emit("salir-mesa", idJugador);
+        const nombre = localStorage.getItem("nombreJugador");
+        if (nombre) {
+          socketRef.current.emit("salir-mesa", nombre);
         }
       }
     };
@@ -257,9 +324,11 @@ export const GlobalContextProvider = (props) => {
       mesaId,
       setMesaId,
       nombreJugador,
-      guardarNombreJugador,
+      nombreGuardado,
+      autenticado,
       registrarJugador,
-      obtenerJugador,
+      loginJugador,
+      cerrarSesion,
       crearMesa,
       unirseMesa,
       jugadorListo,

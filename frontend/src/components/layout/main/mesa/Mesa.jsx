@@ -54,7 +54,7 @@ export function Mesa() {
       </div>
 
       <div className="jugadores-grid">
-        {mesa.jugadores.map((jugador, index) => {
+        {mesa.jugadores.map((jugador) => {
           const esYo = jugador.nombre === nombreJugador;
           return (
             <div

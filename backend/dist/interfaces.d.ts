@@ -1,0 +1,35 @@
+import { Types } from "mongoose";
+export interface Mesa {
+    _id?: Types.ObjectId;
+    nombre: string;
+    estado: string;
+    fase: string;
+    jugadores: Jugador[];
+    mazo: Carta[];
+    triunfo: string;
+    turnoActual: number;
+    inicioRonda: undefined | number;
+    repartidor: number;
+    cartasPorRonda: {
+        nombre: string;
+        carta: Carta;
+    }[];
+    ronda: number;
+}
+export interface Jugador {
+    nombre: string;
+    mesaID?: string;
+    cartas?: Carta[];
+    posicionMesa?: number;
+    puntos?: number;
+    ready?: boolean;
+    listoParaDescartar?: boolean;
+    descarte?: number[];
+    puntosGlobales?: number;
+}
+export interface Carta {
+    nombre?: string;
+    palo: string;
+    numero: number;
+}
+//# sourceMappingURL=interfaces.d.ts.map

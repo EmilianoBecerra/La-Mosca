@@ -3,20 +3,33 @@
   "version": "1.0.0",
   "description": "backend para juego de cartas multijugador online en tiempo real llamado la mosca",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node --watch dist/index.js",
+    "test": "vitest"
   },
   "author": "Emiliano Becerra",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "mongodb": "^6.21.0",
     "mongoose": "^8.21.1",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "standard": "^17.1.2"
+    "@types/chai": "^5.2.3",
+    "@types/express": "^5.0.6",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^25.1.0",
+    "@types/socket.io": "^3.0.1",
+    "chai": "^6.2.2",
+    "mocha": "^11.7.5",
+    "standard": "^17.1.2",
+    "vitest": "^4.0.18"
   },
   "eslintConfig": {
     "env": {

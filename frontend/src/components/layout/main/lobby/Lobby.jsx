@@ -7,7 +7,7 @@ export function Lobby() {
     const { mesas, unirseMesa, setEstadoPantalla } = useContext(GlobalContext);
 
     const handleClick = (mesa) => {
-        unirseMesa(mesa._id);
+        unirseMesa(mesa.nombre);
     };
 
     return (
@@ -43,7 +43,7 @@ export function Lobby() {
             ) : (
                 <div className="sala">
                     {mesas.map((mesa) => (
-                        <div className="mesa-card" key={mesa._id}>
+                        <div className="mesa-card" key={mesa.nombre || mesa._id}>
                             <div className="mesa-card-header">
                                 <span className="mesa-nombre">{mesa.nombre || "Sin nombre"}</span>
                                 <span className={`jugadores-badge ${mesa.jugadores.length >= 6 ? 'llena' : ''}`}>

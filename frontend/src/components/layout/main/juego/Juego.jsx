@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../../../../context/GlobalContext";
 import "./Juego.css";
 import { Buttons } from "../../../parts/Buttons";
@@ -13,6 +13,14 @@ const ICONOS_PALO = {
 export function Juego() {
     const { mesa, nombreJugador, descartarCartas, jugarCarta, rondaActual, resultadoRonda, salirMesa } = useContext(GlobalContext);
     const [cartasSeleccionadas, setCartasSeleccionadas] = useState([]);
+
+    useEffect(() => {
+        if (!mesa) return;
+        // Limpiar selección cuando comienza la partida o cambian las cartas (nueva mano)
+        if (mesa.estado === "en-partida") {
+            setCartasSeleccionadas([]);
+        }
+    }, [mesa?.estado, mesa?.ronda]);
 
     if (!mesa) return null;
 
@@ -39,17 +47,12 @@ export function Juego() {
 
     const handleDescartar = () => {
         descartarCartas(cartasSeleccionadas);
-        setCartasSeleccionadas([]);
+        // No limpiamos aquí para que queden seleccionadas visualmente mientras espera
     };
 
     const handleJugarCarta = (carta) => {
         if (!esPartida || !esMiTurno || resultadoRonda) return;
         jugarCarta(carta);
-    };
-
-    const obtenerNombreJugador = (id) => {
-        const jugador = mesa.jugadores.find(j => j.id === id);
-        return jugador?.nombre || "Jugador";
     };
 
     return (
@@ -112,7 +115,7 @@ export function Juego() {
                                         return (
                                             <div key={idx} className="carta-jugada-resultado">
                                                 <span className="jugador-nombre-resultado">
-                                                    {obtenerNombreJugador(jugada.id)}
+                                                    {jugada.nombre}
                                                 </span>
                                                 <div className={`carta ${jugada.carta.palo.toLowerCase()} ${esGanadora ? 'carta-ganadora' : ''}`}>
                                                     <span className="numero">{jugada.carta.numero}</span>
@@ -133,7 +136,7 @@ export function Juego() {
                                 {rondaActual.map((jugada, idx) => (
                                     <div key={idx} className="carta-jugada-container">
                                         <span className="jugador-nombre-ronda">
-                                            {obtenerNombreJugador(jugada.id)}
+                                            {jugada.nombre}
                                         </span>
                                         <div className={`carta ${jugada.carta.palo.toLowerCase()}`}>
                                             <span className="numero">{jugada.carta.numero}</span>
@@ -181,7 +184,7 @@ export function Juego() {
                     <div className="acciones">
                         {esDescarte && (
                             miJugador?.listoParaDescartar ? (
-                                <p className="estado-espera">Esperando a otros jugadores...</p>
+                                <p className="estado-espera">Esperando descarte de otros jugadores...</p>
                             ) : (
                                 <Buttons
                                     type="button"
