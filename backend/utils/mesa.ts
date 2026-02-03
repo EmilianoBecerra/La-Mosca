@@ -66,7 +66,7 @@ export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], n
         return { ok: true, msg: "ya-en-mesa", data: { mesa, jugador } };
       }
     }
-    if (mesaActual.jugadores.length === 6) {
+    if (mesaActual.jugadores.length === 4) {
       return { ok: false, msg: "La mesa está llena" };
     }
     const jugadorEnMesa = mesaActual.jugadores.find(j => j.nombre === nombreJugador);
