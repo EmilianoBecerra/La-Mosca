@@ -43,10 +43,10 @@ export async function finalizarPartida(nombreMesa, mesas) {
     if (!mesa) {
         return { ok: false, msg: "Error al encontrar la mesa" };
     }
-    if (mesa.estado === "fin-partida") {
-        return { ok: false, msg: "La partida ya terminó" };
-    }
     const ganadorPartida = mesa.jugadores.find(j => j.puntos === 0);
+    if (mesa.estado === "fin-partida") {
+        return { ok: true, msg: "La partida ya terminó" };
+    }
     if (!ganadorPartida) {
         return { ok: false, msg: "Nadie gano todavia" };
     }

@@ -44,6 +44,11 @@ export class PartidaController {
           if (ganador?.puntos) {
             ganador.puntos--;
           }
+          if (ganador?.puntos === 0) {
+            this.io.to(nombreMesa).emit("fin-mano", mesa);
+            mesa.estado = "fin-mano";
+            return;
+          }
           const posicionGanador = mesa.jugadores.findIndex(j => j.nombre === nombreGanador);
           mesa.turnoActual = 0;
           mesa.inicioRonda = posicionGanador;
@@ -74,13 +79,15 @@ export class PartidaController {
   async finPartida(socket: Socket, nombreMesa: string) {
     const ganador = await finalizarPartida(nombreMesa, this.mesas);
     if (!ganador?.ok) {
-      socket.emit("error", "error al identificar ganador");
+      socket.emit("error", "Error en el final de la partida");
       return;
     }
-    if (ganador?.ok) {
-      await this.sincronizarYEmitirMesas();
-      this.io.to(nombreMesa).emit("ganador", ganador.data?.jugador);
-    }
+    if (ganador.msg === "La partida ya terminó") {
+      return;
+    }  
+    await this.sincronizarYEmitirMesas();
+    this.io.to(nombreMesa).emit("ganador", ganador.data?.jugador);
+
   }
 
   private async sincronizarYEmitirMesas() {

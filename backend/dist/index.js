@@ -29,6 +29,7 @@ async function iniciarServidor() {
     let mesas = [];
     mesas = await obtenerTodasLasMesas(mesas);
     const jugadoresConectados = [];
+    console.log("iniciado");
     const jugadoresController = new JugadoresController(io, jugadoresConectados, mesas);
     const mesaController = new MesaController(io, mesas, jugadoresConectados);
     const partidaController = new PartidaController(io, mesas, jugadoresConectados);
