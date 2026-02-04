@@ -4,7 +4,7 @@ import { GlobalContext } from "../../../context/GlobalContext";
 
 
 export function Header() {
-    const { setEstadoPantalla } = useContext(GlobalContext)
+    const { setEstadoPantalla, cerrarSesionSocket } = useContext(GlobalContext)
 
     return (
         <header>
@@ -17,6 +17,7 @@ export function Header() {
                     <li className="disabled" title="Proximamente">Torneos</li>
                     <li className="disabled" title="Proximamente">Tienda</li>
                     <li onClick={() => { setEstadoPantalla("instrucciones") }}>Instrucciones</li>
+                    <li onClick={() => { cerrarSesionSocket() }}>Cerrar Sesion</li>
                 </ul>
             </nav>
         </header>

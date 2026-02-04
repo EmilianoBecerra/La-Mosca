@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import './App.css'
 import { Footer } from './components/layout/footer/Footer'
 import { Header } from './components/layout/header/Header'
@@ -7,9 +7,15 @@ import { Modal } from './components/parts/Modal'
 import { GlobalContextProvider, GlobalContext } from './context/GlobalContext'
 
 function AppContent() {
-  const { autenticado, nombreGuardado, registrarJugador, loginJugador } = useContext(GlobalContext);
+  const { autenticado, nombreGuardado, registrarJugador, loginJugador, cerrarSesion } = useContext(GlobalContext);
   const [nombreInput, setNombreInput] = useState("");
   const [codigoInput, setCodigoInput] = useState("");
+
+  useEffect(() => {
+    if (!autenticado) {
+      setCodigoInput("");
+    }
+  }, [autenticado]);
 
   const handleRegistro = (e) => {
     e.preventDefault();
@@ -26,7 +32,6 @@ function AppContent() {
   };
 
   if (!autenticado) {
-    // Si hay nombre guardado, mostrar login
     if (nombreGuardado) {
       return (
         <>
@@ -48,6 +53,9 @@ function AppContent() {
                   Entrar
                 </button>
               </form>
+              <button className="btn-otro-usuario" onClick={() => cerrarSesion()}>
+                Entrar con otro usuario
+              </button>
             </div>
           </div>
           <Modal />
@@ -55,7 +63,6 @@ function AppContent() {
       );
     }
 
-    // Si no hay nombre guardado, mostrar registro
     return (
       <>
         <div className="modal-inicio-overlay">

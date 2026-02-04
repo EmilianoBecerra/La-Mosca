@@ -8,5 +8,6 @@ export declare class JugadoresController {
     registrar(socket: Socket): void;
     registrarJugador(socket: Socket, nombre: string, codigo: string): Promise<void>;
     loguearJugador(socket: Socket, nombre: string, codigo: string): Promise<void>;
+    cerrarSesion(socket: Socket, nombreJugador: string): void;
 }
 //# sourceMappingURL=JugadoresController.d.ts.map

@@ -1,19 +1,18 @@
 import { jugadorModel } from "../model/JugadorModel.js";
-export async function crearJugador(nombre, codigo, jugadores) {
+export async function crearJugador(nombre, codigo, jugadores, socketId) {
     try {
         const nombreExiste = await jugadorModel.findOne({ nombre });
         if (nombreExiste && codigo === nombreExiste.codigo) {
-            jugadores.push({ nombre });
+            jugadores.push({ nombre, socketId });
             return { ok: true, msg: "Jugador recuperado", data: { nombre } };
         }
         if (nombreExiste && codigo !== nombreExiste.codigo) {
             return { ok: false, msg: "Ya existe un jugador con ese nombre" };
         }
-        const jugadorBD = await jugadorModel.create({ nombre, codigo });
-        if (!jugadorBD)
-            throw new Error("Error crear jugador en la BD");
+        const jugadorBD = await jugadorModel.create({ nombre });
         const jugador = {
             nombre: jugadorBD.nombre,
+            socketId
         };
         if (!jugadores.find(j => j.nombre === nombre)) {
             jugadores.push(jugador);
@@ -25,7 +24,7 @@ export async function crearJugador(nombre, codigo, jugadores) {
         return { ok: false, msg: "Error al registrar usuario en base de datos." };
     }
 }
-export async function loginJugador(nombre, codigo, jugadores) {
+export async function loginJugador(nombre, codigo, jugadores, socketId) {
     try {
         const jugadorDB = await jugadorModel.findOne({ nombre });
         if (!jugadorDB) {
@@ -37,10 +36,14 @@ export async function loginJugador(nombre, codigo, jugadores) {
         }
         ;
         let jugador;
+        if (jugadores.find(j => j.nombre === jugadorDB.nombre)) {
+            return { ok: false, msg: "Jugador ya conectado" };
+        }
         if (!jugadorDB.mesaID) {
             jugador = {
                 nombre: jugadorDB.nombre,
-                puntosGlobales: jugadorDB.puntosGlobales
+                puntosGlobales: jugadorDB.puntosGlobales,
+                socketId
             };
             if (!jugadores.find(j => j.nombre === nombre)) {
                 jugadores.push(jugador);
@@ -50,7 +53,8 @@ export async function loginJugador(nombre, codigo, jugadores) {
         jugador = {
             nombre: jugadorDB.nombre,
             mesaID: jugadorDB.mesaID.toString(),
-            puntosGlobales: jugadorDB.puntosGlobales
+            puntosGlobales: jugadorDB.puntosGlobales,
+            socketId
         };
         if (!jugadores.find(j => j.nombre === nombre)) {
             jugadores.push(jugador);
@@ -75,5 +79,13 @@ export function listoParaJugar(nombre, jugadores) {
         console.error(error);
         return { ok: false, msg: "Error al cambiar de estado ready jugador." };
     }
+}
+export function Logout(nombre, jugadores) {
+    const jugador = jugadores.findIndex(j => j.nombre === nombre);
+    if (jugador === -1) {
+        return { ok: false, msg: "El jugador ya está desconectado" };
+    }
+    const seQuitoJugador = jugadores.splice(jugador, 1);
+    return { ok: true, msg: "Sesión cerrada con éxito", data: seQuitoJugador };
 }
 //# sourceMappingURL=jugadores.js.map

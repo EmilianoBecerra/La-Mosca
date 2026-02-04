@@ -46,8 +46,8 @@ export function Lobby() {
                         <div className="mesa-card" key={mesa.nombre || mesa._id}>
                             <div className="mesa-card-header">
                                 <span className="mesa-nombre">{mesa.nombre || "Sin nombre"}</span>
-                                <span className={`jugadores-badge ${mesa.jugadores.length >= 6 ? 'llena' : ''}`}>
-                                    {mesa.jugadores.length}/6
+                                <span className={`jugadores-badge ${mesa.jugadores.length >= 4 ? 'llena' : ''}`}>
+                                    {mesa.jugadores.length}/4
                                 </span>
                             </div>
                             <div className="mesa-card-body">
@@ -58,11 +58,11 @@ export function Lobby() {
                                 <div className="mesa-progress">
                                     <div
                                         className="mesa-progress-bar"
-                                        style={{ width: `${(mesa.jugadores.length / 6) * 100}%` }}
+                                        style={{ width: `${(mesa.jugadores.length / 4) * 100}%` }}
                                     />
                                 </div>
                             </div>
-                            {mesa.jugadores.length < 6 ? (
+                            {mesa.jugadores.length < 4 ? (
                                 <Buttons
                                     type="button"
                                     label="Unirse"

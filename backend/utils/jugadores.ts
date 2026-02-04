@@ -1,20 +1,20 @@
 import type { Jugador } from "../interfaces.js";
 import { jugadorModel } from "../model/JugadorModel.js";
 
-export async function crearJugador(nombre: string, codigo: string, jugadores: Jugador[]) {
+export async function crearJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
     const nombreExiste = await jugadorModel.findOne({ nombre });
     if (nombreExiste && codigo === nombreExiste.codigo) {
-      jugadores.push({ nombre });
+      jugadores.push({ nombre, socketId });
       return { ok: true, msg: "Jugador recuperado", data: { nombre } };
     }
     if (nombreExiste && codigo !== nombreExiste.codigo) {
       return { ok: false, msg: "Ya existe un jugador con ese nombre" };
     }
-    const jugadorBD = await jugadorModel.create({ nombre, codigo });
-    if (!jugadorBD) throw new Error("Error crear jugador en la BD");
+    const jugadorBD = await jugadorModel.create({ nombre });
     const jugador: Jugador = {
       nombre: jugadorBD.nombre,
+      socketId
     }
     if (!jugadores.find(j => j.nombre === nombre)) {
       jugadores.push(jugador);
@@ -27,7 +27,7 @@ export async function crearJugador(nombre: string, codigo: string, jugadores: Ju
   }
 }
 
-export async function loginJugador(nombre: string, codigo: string, jugadores: Jugador[]) {
+export async function loginJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
     const jugadorDB = await jugadorModel.findOne({ nombre });
 
@@ -39,10 +39,14 @@ export async function loginJugador(nombre: string, codigo: string, jugadores: Ju
       return { ok: false, msg: "Codigo incorrecto o jugador no existe." }
     };
     let jugador: Jugador;
+    if (jugadores.find(j => j.nombre === jugadorDB.nombre)) {
+      return { ok: false, msg: "Jugador ya conectado" };
+    }
     if (!jugadorDB.mesaID) {
       jugador = {
         nombre: jugadorDB.nombre,
-        puntosGlobales: jugadorDB.puntosGlobales
+        puntosGlobales: jugadorDB.puntosGlobales,
+        socketId
       }
       if (!jugadores.find(j => j.nombre === nombre)) {
         jugadores.push(jugador);
@@ -53,7 +57,8 @@ export async function loginJugador(nombre: string, codigo: string, jugadores: Ju
     jugador = {
       nombre: jugadorDB.nombre,
       mesaID: jugadorDB.mesaID.toString(),
-      puntosGlobales: jugadorDB.puntosGlobales
+      puntosGlobales: jugadorDB.puntosGlobales,
+      socketId
     }
     if (!jugadores.find(j => j.nombre === nombre)) {
       jugadores.push(jugador);
@@ -77,4 +82,14 @@ export function listoParaJugar(nombre: string, jugadores: Jugador[]) {
     console.error(error);
     return { ok: false, msg: "Error al cambiar de estado ready jugador." };
   }
+}
+
+export function Logout(nombre: string, jugadores: Jugador[]) {
+  const jugador = jugadores.findIndex(j => j.nombre === nombre);
+  if (jugador === -1) {
+    return { ok: false, msg: "El jugador ya está desconectado" };
+  }
+  const seQuitoJugador = jugadores.splice(jugador, 1);
+  return { ok: true, msg: "Sesión cerrada con éxito", data: seQuitoJugador };
+
 }

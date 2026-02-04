@@ -1,6 +1,6 @@
 import type { Server, Socket } from "socket.io";
 import type { Jugador, Mesa, } from "../interfaces.js";
-import { crearJugador, loginJugador } from "../utils/jugadores.js";
+import { crearJugador, loginJugador, Logout } from "../utils/jugadores.js";
 import { buscarMesaDeJugador } from "../utils/mesa.js";
 
 export class JugadoresController {
@@ -16,11 +16,15 @@ export class JugadoresController {
       await this.loguearJugador(socket, nombre, codigo);
     })
 
+    socket.on("cerrar-sesion", async (nombre) => {
+      this.cerrarSesion(socket, nombre)
+    } )
+
   }
 
   async registrarJugador(socket: Socket, nombre: string, codigo: string) {
     try {
-      const { ok, msg, data } = await crearJugador(nombre, codigo, this.jugadoresConectados);
+      const { ok, msg, data } = await crearJugador(nombre, codigo, this.jugadoresConectados, socket.id);
       if (!ok) {
         socket.emit("error", msg);
         return;
@@ -34,9 +38,13 @@ export class JugadoresController {
 
   async loguearJugador(socket: Socket, nombre: string, codigo: string) {
     try {
-      const { ok, msg, data } = await loginJugador(nombre, codigo, this.jugadoresConectados);
+      const { ok, msg, data } = await loginJugador(nombre, codigo, this.jugadoresConectados, socket.id);
       if (!ok) {
         socket.emit("error", msg);
+        return;
+      }
+      if(msg === "Jugador ya conectado"){
+        socket.emit("jugador-logueado")
         return;
       }
       socket.emit("loguear-jugador", data);
@@ -49,6 +57,16 @@ export class JugadoresController {
       console.error("Error loguear jugador");
       socket.emit("error", "Error al loguear jugador");
     }
+  }
+
+
+  cerrarSesion(socket: Socket, nombreJugador: string) {
+      const jugador = Logout(nombreJugador, this.jugadoresConectados);
+      if(jugador && !jugador.ok) {
+        socket.emit("error", "Error al cerrar sesion");
+        return;
+      }
+      socket.emit("sesion-cerrada");
   }
 
 }

@@ -32,5 +32,5 @@ export declare function finalizarPartida(nombreMesa: string, mesas: Mesa[]): Pro
         mesa: Mesa;
         jugador: Jugador;
     };
-} | undefined>;
+}>;
 //# sourceMappingURL=partida.d.ts.map

@@ -1,5 +1,5 @@
 import type { Jugador } from "../interfaces.js";
-export declare function crearJugador(nombre: string, codigo: string, jugadores: Jugador[]): Promise<{
+export declare function crearJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string): Promise<{
     ok: boolean;
     msg: string;
     data?: never;
@@ -8,7 +8,7 @@ export declare function crearJugador(nombre: string, codigo: string, jugadores: 
     msg: string;
     data: Jugador;
 }>;
-export declare function loginJugador(nombre: string, codigo: string, jugadores: Jugador[]): Promise<{
+export declare function loginJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string): Promise<{
     ok: boolean;
     msg: string;
     data?: never;
@@ -25,5 +25,14 @@ export declare function listoParaJugar(nombre: string, jugadores: Jugador[]): {
     ok: boolean;
     msg: string;
     data: Jugador;
+};
+export declare function Logout(nombre: string, jugadores: Jugador[]): {
+    ok: boolean;
+    msg: string;
+    data?: never;
+} | {
+    ok: boolean;
+    msg: string;
+    data: Jugador[];
 };
 //# sourceMappingURL=jugadores.d.ts.map

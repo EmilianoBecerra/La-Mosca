@@ -186,5 +186,5 @@ export function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]) {
 }
 
 export function obtenerMesasDisponibles(mesas: Mesa[]) {
-  return mesas.filter(m => m.estado === "esperando-jugadores" && m.jugadores.length < 6);
+  return mesas.filter(m => m.estado === "esperando-jugadores" && m.jugadores.length < 4);
 } 

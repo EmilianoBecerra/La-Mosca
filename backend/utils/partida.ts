@@ -53,17 +53,16 @@ export async function finalizarPartida(nombreMesa: string, mesas: Mesa[]) {
   if (!mesa) {
     return { ok: false, msg: "Error al encontrar la mesa" };
   }
+  if (mesa.estado === "fin-partida") {
+    return { ok: false, msg: "La partida ya terminó" };
+  }
   const ganadorPartida = mesa.jugadores.find(j => j.puntos === 0);
   if (!ganadorPartida) {
     return { ok: false, msg: "Nadie gano todavia" };
   }
-  if (ganadorPartida) {
 
-    if (ganadorPartida?.puntosGlobales !== undefined) {
-      await jugadorModel.findOneAndUpdate({ nombre: ganadorPartida.nombre }, { $inc: { puntosGlobales: 1 } })
-      mesa.estado = "fin-partida";
-    }
-    mesa.fase = "fin-partida";
-    return { ok: true, msg: "Partida terminada", data: { mesa, jugador: ganadorPartida } }
-  }
+  mesa.estado = "fin-partida";
+  mesa.fase = "fin-partida";
+  await jugadorModel.findOneAndUpdate({ nombre: ganadorPartida.nombre }, { $inc: { puntosGlobales: 1 } })
+  return { ok: true, msg: "Partida terminada", data: { mesa, jugador: ganadorPartida } }
 }

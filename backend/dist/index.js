@@ -39,6 +39,12 @@ async function iniciarServidor() {
         mesaController.registrar(socket);
         partidaController.registrar(socket);
         generalController.registrar(socket);
+        socket.on("disconnect", () => {
+            const index = jugadoresConectados.findIndex(j => j.socketId === socket.id);
+            if (index !== -1) {
+                jugadoresConectados.splice(index, 1);
+            }
+        });
     });
     server.listen(PORT, "0.0.0.0", () => {
         console.log(`Servidor escuchando en puerto ${PORT}`);

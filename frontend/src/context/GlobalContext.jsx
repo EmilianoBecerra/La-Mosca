@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const GlobalContext = createContext(null);
 
 const crearSocket = () => {
@@ -75,6 +74,13 @@ export const GlobalContextProvider = (props) => {
     codigoTempRef.current = codigo;
     socketRef.current.emit("login", nombre, codigo);
   };
+
+  const cerrarSesionSocket = () => {
+    const nombre = localStorage.getItem("nombreJugador");
+    if (nombre) {
+      socketRef.current.emit("cerrar-sesion", nombre);
+    }
+  };
   const configurarListeners = useCallback((sock) => {
     sock.on("mesas-disponibles", (mesas) => {
       setMesas(mesas);
@@ -104,14 +110,11 @@ export const GlobalContextProvider = (props) => {
     sock.on("jugador-enMesa", (data) => {
       if (typeof data === 'object' && data !== null && data.jugadores) {
         setMesa(prev => {
-          // Solo mostrar modal si intenta entrar a una mesa diferente o crear otra
           if (prev && prev.nombre !== data.nombre) {
             mostrarModal(`Ya estás en la mesa "${data.nombre}". Salí de ella para unirte a otra.`, "info");
           } else if (!prev) {
-            // Si no tiene mesa en el estado pero el servidor dice que sí está en una
             mostrarModal(`Ya estás en la mesa "${data.nombre}". Salí de ella para crear o unirte a otra.`, "info");
           }
-          // Si prev.nombre === data.nombre, no mostrar modal (ya está en esa mesa)
           return data;
         });
         setMesaId(data._id || data.nombre);
@@ -183,7 +186,7 @@ export const GlobalContextProvider = (props) => {
       setError(msg);
       mostrarModal(msg, "error");
       if (msg === "Jugador no existe" || msg === "Codigo incorrecto o jugador no existe.") {
-        cerrarSesion(); // Borra nombreGuardado, App.jsx mostrará registro automáticamente
+        cerrarSesion();
       }
     });
     sock.on("jugador-registrado", (jugador) => {
@@ -191,6 +194,16 @@ export const GlobalContextProvider = (props) => {
     });
     sock.on("loguear-jugador", (jugador) => {
       guardarCredenciales(jugador.nombre, codigoTempRef.current);
+    });
+    sock.on("jugador-logueado", () => {
+      mostrarModal("Jugador ya conectado", "error");
+    });
+    sock.on("sesion-cerrada", () => {
+      localStorage.removeItem("codigoJugador");
+      setAutenticado(false);
+      setMesa(null);
+      setMesaId("");
+      setEstadoPantalla("lobby");
     });
     sock.on("error-registro", (msg) => {
       setError(msg);
@@ -295,7 +308,6 @@ export const GlobalContextProvider = (props) => {
     const socket = socketRef.current;
     configurarListeners(socket);
 
-    // Auto-login si hay credenciales guardadas
     const nombreGuardado = localStorage.getItem("nombreJugador");
     const codigoGuardado = localStorage.getItem("codigoJugador");
 
@@ -304,8 +316,19 @@ export const GlobalContextProvider = (props) => {
       socket.emit("login", nombreGuardado, codigoGuardado);
     }
 
+    const handleReconnect = () => {
+      const nombre = localStorage.getItem("nombreJugador");
+      const codigo = localStorage.getItem("codigoJugador");
+      if (nombre && codigo) {
+        codigoTempRef.current = codigo;
+        socket.emit("login", nombre, codigo);
+      }
+    };
+    socket.io.on("reconnect", handleReconnect);
+
     return () => {
       socket.removeAllListeners();
+      socket.io.off("reconnect", handleReconnect);
     };
   }, [configurarListeners]);
   
@@ -352,6 +375,7 @@ export const GlobalContextProvider = (props) => {
       registrarJugador,
       loginJugador,
       cerrarSesion,
+      cerrarSesionSocket,
       crearMesa,
       unirseMesa,
       jugadorListo,

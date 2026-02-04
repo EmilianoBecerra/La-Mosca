@@ -16,7 +16,6 @@ export function Juego() {
 
     useEffect(() => {
         if (!mesa) return;
-        // Limpiar selección cuando comienza la partida o cambian las cartas (nueva mano)
         if (mesa.estado === "en-partida") {
             setCartasSeleccionadas([]);
         }
@@ -47,7 +46,6 @@ export function Juego() {
 
     const handleDescartar = () => {
         descartarCartas(cartasSeleccionadas);
-        // No limpiamos aquí para que queden seleccionadas visualmente mientras espera
     };
 
     const handleJugarCarta = (carta) => {

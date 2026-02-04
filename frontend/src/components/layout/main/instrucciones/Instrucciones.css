@@ -69,8 +69,6 @@
     color: #a855f7;
 }
 
-/* --- Info Grid (Preparacion) --- */
-
 .info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -98,8 +96,6 @@
     font-weight: 600;
     color: var(--color-text);
 }
-
-/* --- Fases --- */
 
 .fases {
     display: flex;
@@ -137,8 +133,6 @@
     margin: 0;
     line-height: 1.55;
 }
-
-/* --- Puntuacion --- */
 
 .puntuacion-reglas {
     display: flex;
@@ -193,8 +187,6 @@
     color: #a855f7;
 }
 
-/* --- Valor de cartas --- */
-
 .valor-explicacion {
     display: flex;
     flex-direction: column;
@@ -238,8 +230,6 @@
     font-weight: 700;
     font-size: 1.25rem;
 }
-
-/* --- Responsive --- */
 
 @media (max-width: 640px) {
     .instrucciones-header {
