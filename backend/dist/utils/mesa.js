@@ -30,6 +30,7 @@ export async function crearMesa(nombreJugador, nombreMesa, mesas, jugadores) {
             inicioRonda: undefined,
             repartidor: 0,
             cartasPorRonda: [],
+            ganadoresRonda: [],
             ronda: 0
         };
         await mesaModel.create(nuevaMesa);
@@ -57,7 +58,7 @@ export async function unirseAMesa(nombreJugador, jugadores, nombreMesa, mesas) {
                 return { ok: true, msg: "ya-en-mesa", data: { mesa, jugador } };
             }
         }
-        if (mesaActual.jugadores.length === 6) {
+        if (mesaActual.jugadores.length === 4) {
             return { ok: false, msg: "La mesa está llena" };
         }
         const jugadorEnMesa = mesaActual.jugadores.find(j => j.nombre === nombreJugador);

@@ -14,8 +14,8 @@ export function Header() {
                     <li onClick={() => { setEstadoPantalla("lobby") }}>Inicio</li>
                     <li onClick={() => { setEstadoPantalla("crear-mesa") }}>Crear Mesa</li>
                     <li onClick={() => { setEstadoPantalla("ranking") }}>Ranking Global</li>
-                    <li onClick={() => { setEstadoPantalla("torneos") }}>Torneos</li>
-                    <li onClick={() => { setEstadoPantalla("tienda") }}>Tienda</li>
+                    <li className="disabled" title="Proximamente">Torneos</li>
+                    <li className="disabled" title="Proximamente">Tienda</li>
                     <li onClick={() => { setEstadoPantalla("instrucciones") }}>Instrucciones</li>
                 </ul>
             </nav>

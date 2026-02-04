@@ -21,4 +21,16 @@ export declare function juegaCarta(nombreJugador: string, carta: Carta, nombreMe
         jugador: Jugador;
     };
 };
+export declare function finalizarPartida(nombreMesa: string, mesas: Mesa[]): Promise<{
+    ok: boolean;
+    msg: string;
+    data?: never;
+} | {
+    ok: boolean;
+    msg: string;
+    data: {
+        mesa: Mesa;
+        jugador: Jugador;
+    };
+} | undefined>;
 //# sourceMappingURL=partida.d.ts.map

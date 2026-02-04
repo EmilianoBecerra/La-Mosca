@@ -1,4 +1,4 @@
-import {Types} from "mongoose";
+import { Types } from "mongoose";
 
 export interface Mesa {
   _id?: Types.ObjectId,
@@ -11,7 +11,8 @@ export interface Mesa {
   turnoActual: number,
   inicioRonda: undefined | number,
   repartidor: number,
-  cartasPorRonda: {nombre: string, carta: Carta}[],
+  cartasPorRonda: { nombre: string, carta: Carta }[],
+  ganadoresRonda: string[],
   ronda: number
 }
 
@@ -29,6 +30,11 @@ export interface Jugador {
 
 export interface Carta {
   nombre?: string,
-  palo: string ,
-  numero: number 
+  palo: string,
+  numero: number
+}
+
+export interface PuntosGlobales {
+  jugador: string,
+  puntos: number
 }

@@ -8,6 +8,7 @@ import { MesaController } from "./socket/MesaController.js";
 import { PartidaController } from "./socket/PartidaController.js";
 import type { Jugador, Mesa } from "./interfaces.js";
 import { obtenerTodasLasMesas } from "./utils/mesa.js";
+import { GeneralController } from "./socket/GeneralController.js";
 
 
 const app = express();
@@ -36,11 +37,13 @@ async function iniciarServidor() {
   const jugadoresController = new JugadoresController(io, jugadoresConectados, mesas);
   const mesaController = new MesaController(io, mesas, jugadoresConectados);
   const partidaController = new PartidaController(io, mesas, jugadoresConectados);
+  const generalController = new GeneralController(io, mesas, jugadoresConectados);
   io.on("connection", (socket) => {
     socket.emit("mesas-disponibles", mesas);
     jugadoresController.registrar(socket);
     mesaController.registrar(socket);
     partidaController.registrar(socket);
+    generalController.registrar(socket);
   });
 
   server.listen(PORT, "0.0.0.0", () => {

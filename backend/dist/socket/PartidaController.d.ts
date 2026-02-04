@@ -12,6 +12,7 @@ export declare class PartidaController {
     constructor(io: Server, mesas: Mesa[], jugadoresConectados: Jugador[]);
     registrar(socket: Socket): void;
     jugarCarta(socket: Socket, { nombreMesa, nombreJugador, carta }: jugarCartasParams): Promise<void>;
+    finPartida(socket: Socket, nombreMesa: string): Promise<void>;
     private sincronizarYEmitirMesas;
 }
 export {};

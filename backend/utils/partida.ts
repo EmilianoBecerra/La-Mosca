@@ -1,4 +1,5 @@
 import type { Carta, Jugador, Mesa } from "../interfaces.js";
+import { jugadorModel } from "../model/JugadorModel.js";
 
 export function determinarGanador(cartasJugadas: { nombre: string, carta: Carta }[], triunfo: string) {
   const fuerzas = [1, 3, 12, 11, 10, 9, 8, 7, 6, 5, 4, 2];
@@ -28,7 +29,7 @@ export function juegaCarta(nombreJugador: string, carta: Carta, nombreMesa: stri
   const turnoJugador = (inicioRonda + mesa.turnoActual) % numeroJugadores;
 
   if (mesa.jugadores[turnoJugador]?.nombre !== nombreJugador) {
-    return {ok: false, msg: "no es turno del jugador"};
+    return { ok: false, msg: "no es turno del jugador" };
   };
 
   const jugador = mesa.jugadores[turnoJugador];
@@ -37,12 +38,32 @@ export function juegaCarta(nombreJugador: string, carta: Carta, nombreMesa: stri
   );
 
   if (indiceCarta === undefined || indiceCarta === -1) {
-    return {ok: false, msg: "No existe carta"};
+    return { ok: false, msg: "No existe carta" };
   };
 
   jugador?.cartas?.splice(indiceCarta, 1);
 
   mesa.cartasPorRonda.push({ nombre: nombreJugador, carta });
-  return {ok: true, msg:"Jugó carta", data: {mesa, jugador}};
+  return { ok: true, msg: "Jugó carta", data: { mesa, jugador } };
 }
 
+
+export async function finalizarPartida(nombreMesa: string, mesas: Mesa[]) {
+  const mesa = mesas.find(m => m.nombre === nombreMesa);
+  if (!mesa) {
+    return { ok: false, msg: "Error al encontrar la mesa" };
+  }
+  const ganadorPartida = mesa.jugadores.find(j => j.puntos === 0);
+  if (!ganadorPartida) {
+    return { ok: false, msg: "Nadie gano todavia" };
+  }
+  if (ganadorPartida) {
+
+    if (ganadorPartida?.puntosGlobales !== undefined) {
+      await jugadorModel.findOneAndUpdate({ nombre: ganadorPartida.nombre }, { $inc: { puntosGlobales: 1 } })
+      mesa.estado = "fin-partida";
+    }
+    mesa.fase = "fin-partida";
+    return { ok: true, msg: "Partida terminada", data: { mesa, jugador: ganadorPartida } }
+  }
+}

@@ -27,6 +27,7 @@
 }
 
 .btn-crear-mesa {
+    flex: 1;
     background: linear-gradient(135deg, var(--color-primary) 0%, #7c3aed 100%);
     color: white;
     border: none;
@@ -44,6 +45,7 @@
 }
 
 .btn-instrucciones {
+    flex: 1;
     background: transparent;
     color: var(--color-text-muted);
     border: 1px solid var(--color-border);
@@ -300,12 +302,6 @@
     }
 
     .lobby-actions {
-        width: 100%;
-        flex-direction: column;
-    }
-
-    .btn-crear-mesa,
-    .btn-instrucciones {
         width: 100%;
     }
 }

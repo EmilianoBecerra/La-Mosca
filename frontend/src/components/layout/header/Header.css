@@ -19,18 +19,17 @@ header h1 {
 
 .nav-list {
     width: 100%;
-    max-width: 600px;
 }
 
 .ul-header {
     list-style: none;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     gap: 8px;
 }
 
 .ul-header li {
+    flex: 1;
+    text-align: center;
     padding: 8px 16px;
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -44,6 +43,12 @@ header h1 {
 .ul-header li:hover {
     border-color: var(--color-primary);
     color: var(--color-primary);
+}
+
+.ul-header li.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .ul-header li.active {
@@ -63,6 +68,7 @@ header h1 {
     }
 
     .ul-header {
+        flex-wrap: wrap;
         gap: 6px;
     }
 
@@ -72,5 +78,6 @@ header h1 {
         min-height: 38px;
         display: flex;
         align-items: center;
+        justify-content: center;
     }
 }

@@ -90,6 +90,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
@@ -189,6 +190,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
@@ -288,6 +290,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
@@ -391,6 +394,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
@@ -490,6 +494,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
@@ -589,6 +594,7 @@ export declare const mesaModel: import("mongoose").Model<{
             numero?: number | null;
         } | null;
     }>;
+    ganadoresRonda: string[];
     nombre?: string | null;
     estado?: string | null;
     fase?: string | null;

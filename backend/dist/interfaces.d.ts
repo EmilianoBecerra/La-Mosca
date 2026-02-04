@@ -14,6 +14,7 @@ export interface Mesa {
         nombre: string;
         carta: Carta;
     }[];
+    ganadoresRonda: string[];
     ronda: number;
 }
 export interface Jugador {
@@ -31,5 +32,9 @@ export interface Carta {
     nombre?: string;
     palo: string;
     numero: number;
+}
+export interface PuntosGlobales {
+    jugador: string;
+    puntos: number;
 }
 //# sourceMappingURL=interfaces.d.ts.map

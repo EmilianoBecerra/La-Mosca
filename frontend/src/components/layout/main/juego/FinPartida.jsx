@@ -4,14 +4,15 @@ import { Buttons } from "../../../parts/Buttons";
 import "./FinPartida.css";
 
 export function FinPartida() {
-    const { finPartida, setEstadoPantalla, setFinPartida, nombreJugador } = useContext(GlobalContext);
+    const { finPartida, setEstadoPantalla, setFinPartida, salirMesa, nombreJugador } = useContext(GlobalContext);
 
     if (!finPartida) return null;
 
     const esGanador = finPartida.ganador === nombreJugador;
-    const jugadoresOrdenados = [...finPartida.jugadores].sort((a, b) => b.puntos - a.puntos);
+    const jugadoresOrdenados = [...finPartida.jugadores].sort((a, b) => a.puntos - b.puntos);
 
-    const handleVolverLobby = () => {
+    const handleSalir = () => {
+        salirMesa();
         setFinPartida(null);
         setEstadoPantalla("lobby");
     };
@@ -30,7 +31,7 @@ export function FinPartida() {
                 </div>
 
                 <div className="clasificacion">
-                    <h3>Clasificacion Final</h3>
+                    <h3>Resumen de la Partida</h3>
                     <div className="jugadores-list">
                         {jugadoresOrdenados.map((jugador, index) => (
                             <div
@@ -52,8 +53,8 @@ export function FinPartida() {
 
                 <div className="fin-actions">
                     <Buttons
-                        label="Volver al Lobby"
-                        onClick={handleVolverLobby}
+                        label="Salir"
+                        onClick={handleSalir}
                     />
                 </div>
             </div>

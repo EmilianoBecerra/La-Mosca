@@ -19,13 +19,13 @@ export function Lobby() {
                         className="btn-instrucciones"
                         onClick={() => setEstadoPantalla("instrucciones")}
                     >
-                        ? Como Jugar
+                        Como Jugar
                     </button>
                     <button
                         className="btn-crear-mesa"
                         onClick={() => setEstadoPantalla("crear-mesa")}
                     >
-                        + Crear Mesa
+                      Crear Mesa
                     </button>
                 </div>
             </div>

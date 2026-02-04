@@ -54,6 +54,7 @@ export const GlobalContextProvider = (props) => {
 
   const [resultadoRonda, setResultadoRonda] = useState(null);
   const [finPartida, setFinPartida] = useState(null);
+  const [ranking, setRanking] = useState([]);
   const [modal, setModal] = useState({ visible: false, mensaje: "", tipo: "info" });
 
   const mostrarModal = useCallback((mensaje, tipo = "info") => {
@@ -163,9 +164,20 @@ export const GlobalContextProvider = (props) => {
         setEstadoPantalla("fin-mano");
       }, 1500);
     });
-    sock.on("fin-partida", ({ ganador, jugadores }) => {
-      setFinPartida({ ganador, jugadores });
+    sock.on("ganador", (jugadorGanador) => {
+      setMesa(prev => {
+        if (prev) {
+          setFinPartida({
+            ganador: jugadorGanador?.nombre,
+            jugadores: prev.jugadores
+          });
+        }
+        return prev;
+      });
       setEstadoPantalla("fin-partida");
+    });
+    sock.on("ranking-global", (data) => {
+      setRanking(data || []);
     });
     sock.on("error", (msg) => {
       setError(msg);
@@ -269,6 +281,16 @@ export const GlobalContextProvider = (props) => {
     }
   };
 
+  const finalizarPartida = () => {
+    if (mesa) {
+      socketRef.current.emit("fin-partida", mesa.nombre);
+    }
+  };
+
+  const actualizarRanking = useCallback(() => {
+    socketRef.current.emit("actualizar-ranking");
+  }, []);
+
   useEffect(() => {
     const socket = socketRef.current;
     configurarListeners(socket);
@@ -286,6 +308,7 @@ export const GlobalContextProvider = (props) => {
       socket.removeAllListeners();
     };
   }, [configurarListeners]);
+  
   useEffect(() => {
     const enMesaOPartida = (estadoPantalla === "en-partida" || estadoPantalla === "mesa") && mesa?._id;
 
@@ -336,6 +359,7 @@ export const GlobalContextProvider = (props) => {
       jugarCarta,
       salirMesa,
       nuevaMano,
+      finalizarPartida,
       rondaActual,
       resultadoRonda,
       finPartida,
@@ -343,7 +367,9 @@ export const GlobalContextProvider = (props) => {
       error,
       modal,
       mostrarModal,
-      cerrarModal
+      cerrarModal,
+      ranking,
+      actualizarRanking
     }}>
       {props.children}
     </GlobalContext.Provider>

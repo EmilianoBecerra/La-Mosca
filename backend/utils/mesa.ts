@@ -38,6 +38,7 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
       inicioRonda: undefined,
       repartidor: 0,
       cartasPorRonda: [],
+      ganadoresRonda: [],
       ronda: 0
     };
     await mesaModel.create(nuevaMesa);
@@ -99,7 +100,6 @@ export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], n
     return { ok: false, msg: "Error interno: Falló agregar jugador a la mesa" };
   }
 };
-
 
 export function realizarDescarte(nombreJugador: string, indices: number[], nombreMesa: string, mesas: Mesa[]): DataReturn {
   const mesa = mesas.find(m => m.nombre === nombreMesa);
@@ -176,7 +176,6 @@ export async function obtenerTodasLasMesas(mesas: Mesa[]) {
 
   return mesas;
 }
-
 
 export function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]) {
   const mesa = mesas.find(m =>

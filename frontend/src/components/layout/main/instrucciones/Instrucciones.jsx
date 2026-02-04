@@ -20,8 +20,7 @@ export function Instrucciones() {
                 <section className="seccion seccion-intro">
                     <p>
                         La Mosca es un juego de cartas argentino donde el objetivo es
-                        quedarte sin puntos ganando rondas. Pero cuidado: si no ganas
-                        ninguna ronda en una mano, te suman puntos de penalidad.
+                        llegar a 0 puntos ganando rondas.
                     </p>
                 </section>
 
@@ -80,6 +79,9 @@ export function Instrucciones() {
                                     Se juegan <strong>5 rondas</strong>. En cada una, cada
                                     jugador tira una carta por turno, empezando por el que
                                     le sigue al repartidor. La carta mas fuerte gana la ronda.
+                                    El ganador de cada ronda es quien tira primero en la
+                                    siguiente. Si tenes cartas del <strong>mismo palo</strong> que
+                                    la primera carta jugada, estas obligado a tirar una de ese palo.
                                 </p>
                             </div>
                         </div>

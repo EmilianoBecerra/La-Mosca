@@ -4,24 +4,34 @@ import { Buttons } from "../../../parts/Buttons";
 import "./FinMano.css";
 
 export function FinMano() {
-    const { mesa, nuevaMano, nombreJugador } = useContext(GlobalContext);
+    const { mesa, nuevaMano, finalizarPartida, nombreJugador } = useContext(GlobalContext);
     const [contador, setContador] = useState(10);
 
+    const hayGanador = mesa?.jugadores.some(j => j.puntos === 0);
+
     useEffect(() => {
+        if (hayGanador) {
+            finalizarPartida();
+            return;
+        }
         if (contador > 0) {
             const timer = setTimeout(() => setContador(contador - 1), 1000);
             return () => clearTimeout(timer);
         } else {
             nuevaMano();
         }
-    }, [contador, nuevaMano]);
+    }, [contador, nuevaMano, hayGanador, finalizarPartida]);
 
     if (!mesa) return null;
 
     const jugadoresOrdenados = [...mesa.jugadores].sort((a, b) => a.puntos - b.puntos);
 
     const handleContinuar = () => {
-        nuevaMano();
+        if (hayGanador) {
+            finalizarPartida();
+        } else {
+            nuevaMano();
+        }
     };
 
     return (
@@ -52,11 +62,25 @@ export function FinMano() {
                 </div>
 
                 <div className="fin-mano-actions">
-                    <p className="contador-texto">Nueva mano en {contador}s...</p>
-                    <Buttons
-                        label="Continuar Ahora"
-                        onClick={handleContinuar}
-                    />
+                    {hayGanador ? (
+                        <>
+                            <p className="contador-texto">
+                                {jugadoresOrdenados[0]?.nombre} llego a 0 puntos!
+                            </p>
+                            <Buttons
+                                label="Ver Resultado"
+                                onClick={handleContinuar}
+                            />
+                        </>
+                    ) : (
+                        <>
+                            <p className="contador-texto">Nueva mano en {contador}s...</p>
+                            <Buttons
+                                label="Continuar Ahora"
+                                onClick={handleContinuar}
+                            />
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -43,6 +43,7 @@ const mesasSchema = new Schema({
             }
         }
     ],
+    ganadoresRonda: [String],
     ronda: Number
 });
 export const mesaModel = model("mesa", mesasSchema);

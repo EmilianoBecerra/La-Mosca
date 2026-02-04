@@ -45,6 +45,7 @@ const mesasSchema = new Schema({
       }
     }
   ],
+  ganadoresRonda: [String],
   ronda: Number
 });
 

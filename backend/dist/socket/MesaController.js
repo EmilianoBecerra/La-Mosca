@@ -141,6 +141,7 @@ export class MesaController {
         mesa.cartasPorRonda = [];
         mesa.inicioRonda = undefined;
         mesa.repartidor = (mesa.repartidor + 1) % mesa.jugadores.length;
+        mesa.ganadoresRonda = [];
         mesa.jugadores.forEach(j => {
             j.cartas = [];
             j.listoParaDescartar = false;
