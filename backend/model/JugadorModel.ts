@@ -17,7 +17,8 @@ const jugadorSchema = new Schema({
   mesaID: {
     type: Types.ObjectId,
     default: null
-  }
+  },
+  
 });
 
 export const jugadorModel = model("jugador", jugadorSchema);

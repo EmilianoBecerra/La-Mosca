@@ -11,7 +11,7 @@ export async function crearJugador(nombre: string, codigo: string, jugadores: Ju
     if (nombreExiste && codigo !== nombreExiste.codigo) {
       return { ok: false, msg: "Ya existe un jugador con ese nombre" };
     }
-    const jugadorBD = await jugadorModel.create({ nombre });
+    const jugadorBD = await jugadorModel.create({ nombre, codigo });
     const jugador: Jugador = {
       nombre: jugadorBD.nombre,
       socketId
