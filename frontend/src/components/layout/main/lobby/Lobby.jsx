@@ -6,6 +6,10 @@ import { Buttons } from "../../../parts/Buttons";
 export function Lobby() {
     const { mesas, unirseMesa, setEstadoPantalla } = useContext(GlobalContext);
 
+    const mesasDisponibles = mesas.filter(m =>
+        m.estado === "esperando-jugadores" && m.jugadores.length < 4
+    );
+
     const handleClick = (mesa) => {
         unirseMesa(mesa.nombre);
     };
@@ -30,7 +34,7 @@ export function Lobby() {
                 </div>
             </div>
 
-            {mesas.length < 1 ? (
+            {mesasDisponibles.length < 1 ? (
                 <div className="sin-mesas">
                     <div className="sin-mesas-icon">🃏</div>
                     <h3>No hay mesas disponibles</h3>
@@ -42,7 +46,7 @@ export function Lobby() {
                 </div>
             ) : (
                 <div className="sala">
-                    {mesas.map((mesa) => (
+                    {mesasDisponibles.map((mesa) => (
                         <div className="mesa-card" key={mesa.nombre || mesa._id}>
                             <div className="mesa-card-header">
                                 <span className="mesa-nombre">{mesa.nombre || "Sin nombre"}</span>

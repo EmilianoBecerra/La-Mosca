@@ -47,8 +47,7 @@ header h1 {
 
 .ul-header li.disabled {
     opacity: 0.4;
-    cursor: not-allowed;
-    pointer-events: none;
+    cursor: pointer;
 }
 
 .ul-header li.active {

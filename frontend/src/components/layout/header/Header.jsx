@@ -12,7 +12,6 @@ export function Header() {
             <nav className="nav-list">
                 <ul className="ul-header">
                     <li onClick={() => { setEstadoPantalla("lobby") }}>Inicio</li>
-                    <li onClick={() => { setEstadoPantalla("crear-mesa") }}>Crear Mesa</li>
                     <li onClick={() => { setEstadoPantalla("ranking") }}>Ranking Global</li>
                     <li className="disabled" title="Proximamente">Torneos</li>
                     <li className="disabled" title="Proximamente">Tienda</li>

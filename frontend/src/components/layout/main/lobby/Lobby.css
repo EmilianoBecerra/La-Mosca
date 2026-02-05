@@ -95,6 +95,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text);
+    text-transform: capitalize;
 }
 
 .jugadores-badge {
@@ -130,6 +131,7 @@
 .mesa-info-row .value {
     color: var(--color-text);
     font-weight: 500;
+    text-transform: capitalize;
 }
 
 .mesa-progress {

@@ -3,6 +3,16 @@ import "./Mesa.css";
 import { GlobalContext } from "../../../../context/GlobalContext";
 import { Buttons } from "../../../parts/Buttons";
 
+const EMOJIS_JUGADORES = ['🦊', '🐸', '🐵', '🦁', '🐯', '🐻', '🐼', '🐨', '🐰', '🦄', '🐲', '🦖', '🦈', '🐙', '🦋'];
+
+const getEmojiForPlayer = (nombre) => {
+  let hash = 0;
+  for (let i = 0; i < nombre.length; i++) {
+    hash = nombre.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return EMOJIS_JUGADORES[Math.abs(hash) % EMOJIS_JUGADORES.length];
+};
+
 export function Mesa() {
   const { mesa, nombreJugador, jugadorListo, salirMesa } = useContext(GlobalContext);
 
@@ -34,7 +44,6 @@ export function Mesa() {
       <div className="mesa-header">
         <div className="mesa-titulo">
           <h2>{mesa.nombre}</h2>
-          <span className="mesa-id">ID: {String(mesa.id).slice(0, 8)}...</span>
         </div>
         <div className={`estado-badge ${todosListos ? 'iniciando' : ''}`}>
           {todosListos ? 'Iniciando partida...' : 'Esperando jugadores'}
@@ -43,7 +52,7 @@ export function Mesa() {
 
       <div className="jugadores-info">
         <div className="info-item">
-          <span className="info-value">{totalJugadores}/6</span>
+          <span className="info-value">{totalJugadores}/4</span>
           <span className="info-label">Jugadores</span>
         </div>
         <div className="info-divider"></div>
@@ -58,12 +67,12 @@ export function Mesa() {
           const esYo = jugador.nombre === nombreJugador;
           return (
             <div
-              key={jugador.id}
+              key={jugador.nombre}
               className={`jugador-slot ${esYo ? 'yo' : ''} ${jugador.ready ? 'listo' : ''}`}
             >
               <div className="jugador-avatar">
                 <span className="avatar-emoji">
-                  {esYo ? '😎' : '👤'}
+                  {esYo ? '😎' : getEmojiForPlayer(jugador.nombre)}
                 </span>
                 {jugador.ready && (
                   <span className="check-mark">✓</span>
@@ -87,7 +96,7 @@ export function Mesa() {
           );
         })}
 
-        {Array.from({ length: 6 - totalJugadores }).map((_, i) => (
+        {Array.from({ length: 4 - totalJugadores }).map((_, i) => (
           <div key={`empty-${i}`} className="jugador-slot vacio">
             <div className="jugador-avatar vacio">
               <span className="avatar-emoji">?</span>

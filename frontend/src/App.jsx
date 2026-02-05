@@ -52,10 +52,11 @@ function AppContent() {
                 <button type="submit" disabled={codigoInput.trim().length < 1}>
                   Entrar
                 </button>
+                <button className="btn-otro-usuario" onClick={() => cerrarSesion()}>
+                  Entrar con otro usuario
+                </button>
               </form>
-              <button className="btn-otro-usuario" onClick={() => cerrarSesion()}>
-                Entrar con otro usuario
-              </button>
+
             </div>
           </div>
           <Modal />

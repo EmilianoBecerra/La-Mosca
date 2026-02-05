@@ -10,7 +10,9 @@ export function CrearMesa() {
 
     const handleCrear = (e) => {
         e.preventDefault();
-        crearMesa(nombreMesa);
+        const nombreSanitizado = nombreMesa.trim().toLowerCase();
+        if (!nombreSanitizado) return;
+        crearMesa(nombreSanitizado);
     }
 
     return (
