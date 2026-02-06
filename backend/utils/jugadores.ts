@@ -3,20 +3,21 @@ import { jugadorModel } from "../model/JugadorModel.js";
 
 export async function crearJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
-    const nombreExiste = await jugadorModel.findOne({ nombre });
+    const nombreSanitizado : string = nombre.toLocaleLowerCase();
+    const nombreExiste = await jugadorModel.findOne({ nombre: nombreSanitizado });
     if (nombreExiste && codigo === nombreExiste.codigo) {
-      jugadores.push({ nombre, socketId });
-      return { ok: true, msg: "Jugador recuperado", data: { nombre } };
+      jugadores.push({ nombre: nombreSanitizado, socketId });
+      return { ok: true, msg: "Jugador recuperado", data: { nombreSanitizado } };
     }
     if (nombreExiste && codigo !== nombreExiste.codigo) {
       return { ok: false, msg: "Ya existe un jugador con ese nombre" };
     }
-    const jugadorBD = await jugadorModel.create({ nombre, codigo });
+    const jugadorBD = await jugadorModel.create({ nombre: nombreSanitizado, codigo });
     const jugador: Jugador = {
       nombre: jugadorBD.nombre,
       socketId
     }
-    if (!jugadores.find(j => j.nombre === nombre)) {
+    if (!jugadores.find(j => j.nombre === nombreSanitizado)) {
       jugadores.push(jugador);
     }
 

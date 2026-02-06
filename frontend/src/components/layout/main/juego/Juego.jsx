@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext } from "../../../../context/GlobalContext";
 import "./Juego.css";
 import { Buttons } from "../../../parts/Buttons";
@@ -18,13 +18,21 @@ const capitalizarNombre = (nombre) => {
 export function Juego() {
   const { mesa, nombreJugador, descartarCartas, jugarCarta, rondaActual, resultadoRonda, salirMesa } = useContext(GlobalContext);
   const [cartasSeleccionadas, setCartasSeleccionadas] = useState([]);
+  const mesaRef = useRef(null);
 
   useEffect(() => {
     if (!mesa) return;
     if (mesa.estado === "en-partida") {
-      setCartasSeleccionadas([]);
+      setCartasSeleccionadas([]); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [mesa]);
+
+  useEffect(() => {
+    if (mesa?.estado === "descarte" || mesa?.estado === "en-partida") {
+      mesaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [mesa?.estado]);
+
 
   if (!mesa) return null;
 
@@ -81,95 +89,102 @@ export function Juego() {
         </div>
       </div>
 
-      <div className="area-juego">
-        <div className="otros-jugadores">
+      <div className="mesa-poker">
+        <div className="posiciones-rivales">
           {otrosJugadores.map((jugador) => {
             const esElTurno = jugador._id?.toString() === jugadorEnTurno?._id?.toString();
             return (
               <div
-                key={jugador.id}
-                className={`jugador-rival ${esElTurno ? 'turno-activo' : ''}`}
+                key={jugador.nombre}
+                className={`rival-seat ${esElTurno ? 'turno-activo' : ''}`}
               >
-                <div className="avatar">
-                  {esElTurno && <span className="turno-indicator">▶</span>}
-                  👤
+                <div className="rival-cartas-back">
+                  {Array.from({ length: jugador.cartas?.length || 0 }).map((_, i) => (
+                    <div key={i} className="carta-back-mini" />
+                  ))}
                 </div>
-                <span className="nombre">{capitalizarNombre(jugador.nombre)}</span>
-                <div className="jugador-stats">
-                  <span className="cartas-count">🃏 {jugador.cartas?.length || 0}</span>
-                  <span className="puntos">{jugador.puntos} pts</span>
+                <span className="rival-nombre">{capitalizarNombre(jugador.nombre)}</span>
+                <div className="rival-stats">
+                  <span className="rival-puntos">⭐ {jugador.puntos}</span>
+                  {esElTurno && <span className="rival-turno">▶</span>}
+                  {esDescarte && jugador.listoParaDescartar && (
+                    <span className="listo-badge">Listo</span>
+                  )}
                 </div>
-                {esDescarte && jugador.listoParaDescartar && (
-                  <span className="listo-badge">Listo</span>
-                )}
               </div>
             );
           })}
         </div>
 
-        <div className="tablero-centro">
-          {resultadoRonda ? (
-            <div className="resultado-ronda">
-              <div className="resultado-ronda-content">
-                <span className="resultado-icon">🏆</span>
-                <h4>¡{capitalizarNombre(resultadoRonda.ganador)} gana la ronda!</h4>
-                <div className="cartas-ronda-resultado">
-                  {resultadoRonda.cartasJugadas?.map((jugada, idx) => {
-                    const esGanadora = jugada.carta.numero === resultadoRonda.cartaGanadora?.numero &&
+        <div ref={mesaRef} className="mesa-oval">
+          {(() => {
+            const cartasEnJuego = resultadoRonda?.cartasJugadas || rondaActual;
+            const cartasRivales = cartasEnJuego.filter(j => j.nombre !== nombreJugador);
+            const miCarta = cartasEnJuego.find(j => j.nombre === nombreJugador);
+
+            return (
+              <>
+                <div className="mesa-zona-rivales">
+                  {cartasRivales.map((jugada, idx) => {
+                    const esGanadora = resultadoRonda &&
+                      jugada.carta.numero === resultadoRonda.cartaGanadora?.numero &&
                       jugada.carta.palo === resultadoRonda.cartaGanadora?.palo;
                     return (
-                      <div key={idx} className="carta-jugada-resultado">
-                        <span className="jugador-nombre-resultado">
-                          {capitalizarNombre(jugada.nombre)}
-                        </span>
+                      <div key={idx} className="carta-jugada-pos">
+                        <span className="jugador-nombre-ronda">{capitalizarNombre(jugada.nombre)}</span>
                         <div className={`carta ${jugada.carta.palo.toLowerCase()} ${esGanadora ? 'carta-ganadora' : ''}`}>
                           <span className="numero">{jugada.carta.numero}</span>
-                          <span className="palo-icon">
-                            {ICONOS_PALO[jugada.carta.palo.toLowerCase()]}
-                          </span>
+                          <span className="palo-icon">{ICONOS_PALO[jugada.carta.palo.toLowerCase()]}</span>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-              </div>
-            </div>
-          ) : rondaActual.length > 0 ? (
-            <div className="ronda-actual">
-              <h4>Ronda Actual</h4>
-              <div className="cartas-ronda">
-                {rondaActual.map((jugada, idx) => (
-                  <div key={idx} className="carta-jugada-container">
-                    <span className="jugador-nombre-ronda">
-                      {capitalizarNombre(jugada.nombre)}
-                    </span>
-                    <div className={`carta ${jugada.carta.palo.toLowerCase()}`}>
-                      <span className="numero">{jugada.carta.numero}</span>
-                      <span className="palo-icon">
-                        {ICONOS_PALO[jugada.carta.palo.toLowerCase()]}
-                      </span>
+
+                <div className="mesa-zona-centro">
+                  {resultadoRonda ? (
+                    <div className="resultado-ronda">
+                      <span className="resultado-icon">🏆</span>
+                      <h4>¡{capitalizarNombre(resultadoRonda.ganador)} gana!</h4>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="esperando-jugadas">
-              {esDescarte ? (
-                <p>Selecciona las cartas que deseas descartar</p>
-              ) : esPartida ? (
-                <p>{esMiTurno ? "¡Es tu turno! Haz clic en una carta para jugarla" : `Esperando a ${capitalizarNombre(jugadorEnTurno?.nombre)}...`}</p>
-              ) : (
-                <p>Esperando...</p>
-              )}
-            </div>
-          )}
+                  ) : cartasEnJuego.length === 0 ? (
+                    <div className="esperando-jugadas">
+                      {esDescarte ? (
+                        <p>Selecciona cartas para descartar</p>
+                      ) : esPartida ? (
+                        <p>{esMiTurno ? "¡Tu turno!" : `Esperando a ${capitalizarNombre(jugadorEnTurno?.nombre)}...`}</p>
+                      ) : (
+                        <p>Esperando...</p>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+
+                <div className="mesa-zona-yo">
+                  {miCarta && (() => {
+                    const esGanadora = resultadoRonda &&
+                      miCarta.carta.numero === resultadoRonda.cartaGanadora?.numero &&
+                      miCarta.carta.palo === resultadoRonda.cartaGanadora?.palo;
+                    return (
+                      <div className="carta-jugada-pos">
+                        <div className={`carta ${miCarta.carta.palo.toLowerCase()} ${esGanadora ? 'carta-ganadora' : ''}`}>
+                          <span className="numero">{miCarta.carta.numero}</span>
+                          <span className="palo-icon">{ICONOS_PALO[miCarta.carta.palo.toLowerCase()]}</span>
+                        </div>
+                        <span className="jugador-nombre-ronda">Tú</span>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </>
+            );
+          })()}
         </div>
 
-        <div className="mis-cartas-area">
+        <div className="mi-posicion">
           <div className="mi-info">
             <h3>{capitalizarNombre(miJugador?.nombre)}</h3>
-            <span className="mis-puntos">{miJugador?.puntos} puntos</span>
+            <span className="mis-puntos">⭐ {miJugador?.puntos}</span>
             {esMiTurno && esPartida && <span className="mi-turno-badge">Tu turno</span>}
           </div>
 

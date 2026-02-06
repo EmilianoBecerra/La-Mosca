@@ -2,6 +2,12 @@ import type { Jugador } from "../interfaces.js";
 export declare function crearJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string): Promise<{
     ok: boolean;
     msg: string;
+    data: {
+        nombreSanitizado: string;
+    };
+} | {
+    ok: boolean;
+    msg: string;
     data?: never;
 } | {
     ok: boolean;
