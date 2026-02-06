@@ -30,7 +30,8 @@ export async function crearJugador(nombre: string, codigo: string, jugadores: Ju
 
 export async function loginJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
-    const jugadorDB = await jugadorModel.findOne({ nombre });
+    const nombreSanitizado : string = nombre.toLocaleLowerCase();
+    const jugadorDB = await jugadorModel.findOne({ nombre: nombreSanitizado });
 
     if (!jugadorDB) {
       return { ok: false, msg: "Jugador no existe" }

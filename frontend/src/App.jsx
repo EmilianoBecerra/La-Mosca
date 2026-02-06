@@ -6,6 +6,8 @@ import { Main } from './components/layout/main/Main'
 import { Modal } from './components/parts/Modal'
 import { GlobalContextProvider, GlobalContext } from './context/GlobalContext'
 
+const sanitizar = (valor) => valor.replace(/[^a-zA-Z0-9áéíóúñÁÉÍÓÚÑ ]/g, "");
+
 function AppContent() {
   const { autenticado, nombreGuardado, registrarJugador, loginJugador, cerrarSesion } = useContext(GlobalContext);
   const [nombreInput, setNombreInput] = useState("");
@@ -43,7 +45,7 @@ function AppContent() {
                 <input
                   type="text"
                   value={codigoInput}
-                  onChange={(e) => setCodigoInput(e.target.value)}
+                  onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
                   placeholder="Código"
                   maxLength={20}
                   minLength={1}
@@ -74,7 +76,7 @@ function AppContent() {
               <input
                 type="text"
                 value={nombreInput}
-                onChange={(e) => setNombreInput(e.target.value)}
+                onChange={(e) => setNombreInput(sanitizar(e.target.value))}
                 placeholder="Tu nombre"
                 maxLength={20}
                 minLength={2}
@@ -83,7 +85,7 @@ function AppContent() {
               <input
                 type="text"
                 value={codigoInput}
-                onChange={(e) => setCodigoInput(e.target.value)}
+                onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
                 placeholder="Código"
                 maxLength={20}
                 minLength={1}
