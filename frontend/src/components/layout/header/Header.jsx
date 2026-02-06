@@ -1,10 +1,11 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import "./Header.css";
 import { GlobalContext } from "../../../context/GlobalContext";
 
 
 export function Header() {
-    const { setEstadoPantalla, cerrarSesionSocket } = useContext(GlobalContext)
+    const { setEstadoPantalla, cerrarSesionSocket, nombreJugador } = useContext(GlobalContext)
+    const [menuAbierto, setMenuAbierto] = useState(false);
 
     return (
         <header>
@@ -16,7 +17,16 @@ export function Header() {
                     <li className="disabled" title="Proximamente">Torneos</li>
                     <li className="disabled" title="Proximamente">Tienda</li>
                     <li onClick={() => { setEstadoPantalla("instrucciones") }}>Instrucciones</li>
-                    <li onClick={() => { cerrarSesionSocket() }}>Cerrar Sesion</li>
+                    <li className="usuario-btn" onClick={() => setMenuAbierto(!menuAbierto)}>
+                        😎 {nombreJugador}
+                        {menuAbierto && (
+                            <div className="usuario-menu" onClick={(e) => e.stopPropagation()}>
+                                <button onClick={() => { cerrarSesionSocket(); setMenuAbierto(false); }}>
+                                    Cerrar Sesión
+                                </button>
+                            </div>
+                        )}
+                    </li>
                 </ul>
             </nav>
         </header>

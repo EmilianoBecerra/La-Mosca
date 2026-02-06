@@ -3,11 +3,11 @@ import { jugadorModel } from "../model/JugadorModel.js";
 
 export async function crearJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
-    const nombreSanitizado : string = nombre.toLocaleLowerCase();
+    const nombreSanitizado: string = nombre.toLocaleLowerCase();
     const nombreExiste = await jugadorModel.findOne({ nombre: nombreSanitizado });
     if (nombreExiste && codigo === nombreExiste.codigo) {
       jugadores.push({ nombre: nombreSanitizado, socketId });
-      return { ok: true, msg: "Jugador recuperado", data: { nombreSanitizado } };
+      return { ok: true, msg: "Jugador recuperado", data: { nombre: nombreSanitizado } };
     }
     if (nombreExiste && codigo !== nombreExiste.codigo) {
       return { ok: false, msg: "Ya existe un jugador con ese nombre" };
@@ -30,7 +30,7 @@ export async function crearJugador(nombre: string, codigo: string, jugadores: Ju
 
 export async function loginJugador(nombre: string, codigo: string, jugadores: Jugador[], socketId: string) {
   try {
-    const nombreSanitizado : string = nombre.toLocaleLowerCase();
+    const nombreSanitizado: string = nombre.toLocaleLowerCase();
     const jugadorDB = await jugadorModel.findOne({ nombre: nombreSanitizado });
 
     if (!jugadorDB) {
@@ -87,7 +87,8 @@ export function listoParaJugar(nombre: string, jugadores: Jugador[]) {
 }
 
 export function Logout(nombre: string, jugadores: Jugador[]) {
-  const jugador = jugadores.findIndex(j => j.nombre === nombre);
+  const nombreSanitizado = nombre.toLocaleLowerCase();
+  const jugador = jugadores.findIndex(j => j.nombre.toLocaleLowerCase() === nombreSanitizado);
   if (jugador === -1) {
     return { ok: false, msg: "El jugador ya está desconectado" };
   }

@@ -5,7 +5,7 @@ export async function crearJugador(nombre, codigo, jugadores, socketId) {
         const nombreExiste = await jugadorModel.findOne({ nombre: nombreSanitizado });
         if (nombreExiste && codigo === nombreExiste.codigo) {
             jugadores.push({ nombre: nombreSanitizado, socketId });
-            return { ok: true, msg: "Jugador recuperado", data: { nombreSanitizado } };
+            return { ok: true, msg: "Jugador recuperado", data: { nombre: nombreSanitizado } };
         }
         if (nombreExiste && codigo !== nombreExiste.codigo) {
             return { ok: false, msg: "Ya existe un jugador con ese nombre" };
@@ -27,7 +27,8 @@ export async function crearJugador(nombre, codigo, jugadores, socketId) {
 }
 export async function loginJugador(nombre, codigo, jugadores, socketId) {
     try {
-        const jugadorDB = await jugadorModel.findOne({ nombre });
+        const nombreSanitizado = nombre.toLocaleLowerCase();
+        const jugadorDB = await jugadorModel.findOne({ nombre: nombreSanitizado });
         if (!jugadorDB) {
             return { ok: false, msg: "Jugador no existe" };
         }
@@ -82,7 +83,10 @@ export function listoParaJugar(nombre, jugadores) {
     }
 }
 export function Logout(nombre, jugadores) {
-    const jugador = jugadores.findIndex(j => j.nombre === nombre);
+    console.log(nombre);
+    const nombreSanitizado = nombre.toLocaleLowerCase();
+    console.log(jugadores[0]?.nombre);
+    const jugador = jugadores.findIndex(j => j.nombre.toLocaleLowerCase() === nombreSanitizado);
     if (jugador === -1) {
         return { ok: false, msg: "El jugador ya está desconectado" };
     }

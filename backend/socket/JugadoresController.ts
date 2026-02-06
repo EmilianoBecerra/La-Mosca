@@ -18,7 +18,7 @@ export class JugadoresController {
 
     socket.on("cerrar-sesion", async (nombre) => {
       this.cerrarSesion(socket, nombre)
-    } )
+    })
 
   }
 
@@ -43,13 +43,13 @@ export class JugadoresController {
         socket.emit("error", msg);
         return;
       }
-      if(msg === "Jugador ya conectado"){
+      if (msg === "Jugador ya conectado") {
         socket.emit("jugador-logueado")
         return;
       }
       socket.emit("loguear-jugador", data);
       const estaEnUnaMesa = buscarMesaDeJugador(nombre, this.mesas);
-      if(estaEnUnaMesa.mesa){
+      if (estaEnUnaMesa.mesa) {
         socket.join(estaEnUnaMesa.mesa.nombre)
         socket.emit("reconectar-partida", estaEnUnaMesa.mesa)
       }
@@ -61,12 +61,12 @@ export class JugadoresController {
 
 
   cerrarSesion(socket: Socket, nombreJugador: string) {
-      const jugador = Logout(nombreJugador, this.jugadoresConectados);
-      if(jugador && !jugador.ok) {
-        socket.emit("error", "Error al cerrar sesion");
-        return;
-      }
-      socket.emit("sesion-cerrada");
+    const jugador = Logout(nombreJugador, this.jugadoresConectados);
+    if (jugador && !jugador.ok) {
+      socket.emit("error", "Error al cerrar sesion");
+      return;
+    }
+    socket.emit("sesion-cerrada");
   }
 
 }
