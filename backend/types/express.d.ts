@@ -1,0 +1,7 @@
+import type { Jwt, JwtPayload } from "jsonwebtoken";
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: JwtPayload | undefined;
+  }
+}

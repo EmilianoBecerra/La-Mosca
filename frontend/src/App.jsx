@@ -39,14 +39,14 @@ function AppContent() {
         <>
           <div className="modal-inicio-overlay">
             <div className="modal-inicio">
-              <h2>Hola de nuevo, {nombreGuardado}</h2>
-              <p>Ingresa tu código para continuar</p>
+              <h2>Hola de nuevo, <span className='nombreUsuario'>{nombreGuardado}</span></h2>
+              <p>Ingresa tu contraseña para continuar</p>
               <form onSubmit={handleLogin}>
                 <input
                   type="text"
                   value={codigoInput}
                   onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
-                  placeholder="Código"
+                  placeholder="Contraseña"
                   maxLength={20}
                   minLength={1}
                   autoFocus
@@ -71,13 +71,13 @@ function AppContent() {
         <div className="modal-inicio-overlay">
           <div className="modal-inicio">
             <h2>Bienvenido a La Mosca</h2>
-            <p>Ingresa tu nombre y código para registrarte</p>
+            <p>Ingresa tu usuario y contraseña para registrarte</p>
             <form onSubmit={handleRegistro}>
               <input
                 type="text"
                 value={nombreInput}
                 onChange={(e) => setNombreInput(sanitizar(e.target.value))}
-                placeholder="Tu nombre"
+                placeholder="Usuario"
                 maxLength={20}
                 minLength={2}
                 autoFocus
@@ -86,7 +86,7 @@ function AppContent() {
                 type="text"
                 value={codigoInput}
                 onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
-                placeholder="Código"
+                placeholder="Contraseña"
                 maxLength={20}
                 minLength={1}
               />

@@ -6,8 +6,6 @@ export declare class JugadoresController {
     mesas: Mesa[];
     constructor(io: Server, jugadoresConectados: Jugador[], mesas: Mesa[]);
     registrar(socket: Socket): void;
-    registrarJugador(socket: Socket, nombre: string, codigo: string): Promise<void>;
-    loguearJugador(socket: Socket, nombre: string, codigo: string): Promise<void>;
     cerrarSesion(socket: Socket, nombreJugador: string): void;
 }
 //# sourceMappingURL=JugadoresController.d.ts.map

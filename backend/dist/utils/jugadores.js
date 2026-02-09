@@ -83,9 +83,7 @@ export function listoParaJugar(nombre, jugadores) {
     }
 }
 export function Logout(nombre, jugadores) {
-    console.log(nombre);
     const nombreSanitizado = nombre.toLocaleLowerCase();
-    console.log(jugadores[0]?.nombre);
     const jugador = jugadores.findIndex(j => j.nombre.toLocaleLowerCase() === nombreSanitizado);
     if (jugador === -1) {
         return { ok: false, msg: "El jugador ya está desconectado" };

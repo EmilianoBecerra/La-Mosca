@@ -37,7 +37,6 @@
   text-align: center;
   max-width: 400px;
   width: 90%;
-  text-transform: capitalize;
 }
 
 .modal-inicio h2 {
@@ -80,6 +79,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nombreUsuario {
+  text-transform: capitalize;
 }
 
 .btn-otro-usuario {

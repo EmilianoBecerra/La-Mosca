@@ -116,17 +116,18 @@ export function Juego() {
           })}
         </div>
 
-        <div ref={mesaRef} className="mesa-oval">
+        <div ref={mesaRef} className={`mesa-oval ${resultadoRonda && rondaActual.length === 0 ? 'mostrar-resultado' : ''}`}>
           {(() => {
-            const cartasEnJuego = resultadoRonda?.cartasJugadas || rondaActual;
+            const cartasEnJuego = rondaActual.length > 0 ? rondaActual : (resultadoRonda?.cartasJugadas || []);
             const cartasRivales = cartasEnJuego.filter(j => j.nombre !== nombreJugador);
             const miCarta = cartasEnJuego.find(j => j.nombre === nombreJugador);
+            const enResultado = resultadoRonda && rondaActual.length === 0;
 
             return (
               <>
-                <div className="mesa-zona-rivales">
+                <div className={`mesa-zona-rivales ${enResultado ? 'cartas-blur' : ''}`}>
                   {cartasRivales.map((jugada, idx) => {
-                    const esGanadora = resultadoRonda &&
+                    const esGanadora = enResultado &&
                       jugada.carta.numero === resultadoRonda.cartaGanadora?.numero &&
                       jugada.carta.palo === resultadoRonda.cartaGanadora?.palo;
                     return (
@@ -142,12 +143,7 @@ export function Juego() {
                 </div>
 
                 <div className="mesa-zona-centro">
-                  {resultadoRonda ? (
-                    <div className="resultado-ronda">
-                      <span className="resultado-icon">🏆</span>
-                      <h4>¡{capitalizarNombre(resultadoRonda.ganador)} gana!</h4>
-                    </div>
-                  ) : cartasEnJuego.length === 0 ? (
+                  {!enResultado && cartasEnJuego.length === 0 && (
                     <div className="esperando-jugadas">
                       {esDescarte ? (
                         <p>Selecciona cartas para descartar</p>
@@ -157,12 +153,12 @@ export function Juego() {
                         <p>Esperando...</p>
                       )}
                     </div>
-                  ) : null}
+                  )}
                 </div>
 
-                <div className="mesa-zona-yo">
+                <div className={`mesa-zona-yo ${enResultado ? 'cartas-blur' : ''}`}>
                   {miCarta && (() => {
-                    const esGanadora = resultadoRonda &&
+                    const esGanadora = enResultado &&
                       miCarta.carta.numero === resultadoRonda.cartaGanadora?.numero &&
                       miCarta.carta.palo === resultadoRonda.cartaGanadora?.palo;
                     return (
@@ -176,6 +172,15 @@ export function Juego() {
                     );
                   })()}
                 </div>
+
+                {enResultado && (
+                  <div className="resultado-overlay">
+                    <div className="resultado-glass">
+                      <span className="resultado-icon">🏆</span>
+                      <h4>¡{capitalizarNombre(resultadoRonda.ganador)} gana la ronda!</h4>
+                    </div>
+                  </div>
+                )}
               </>
             );
           })()}

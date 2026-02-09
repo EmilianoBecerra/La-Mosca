@@ -1,8 +1,8 @@
 import { Schema, Types } from "mongoose";
 export declare const jugadorModel: import("mongoose").Model<{
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;
@@ -14,8 +14,8 @@ export declare const jugadorModel: import("mongoose").Model<{
     } | null;
 }, {}, {}, {}, import("mongoose").Document<unknown, {}, {
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;
@@ -27,8 +27,8 @@ export declare const jugadorModel: import("mongoose").Model<{
     } | null;
 }, {}, import("mongoose").DefaultSchemaOptions> & {
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;
@@ -44,8 +44,8 @@ export declare const jugadorModel: import("mongoose").Model<{
     __v: number;
 }, Schema<any, import("mongoose").Model<any, any, any, any, any, any>, {}, {}, {}, {}, import("mongoose").DefaultSchemaOptions, {
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;
@@ -57,8 +57,8 @@ export declare const jugadorModel: import("mongoose").Model<{
     } | null;
 }, import("mongoose").Document<unknown, {}, import("mongoose").FlatRecord<{
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;
@@ -70,8 +70,8 @@ export declare const jugadorModel: import("mongoose").Model<{
     } | null;
 }>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<{
     nombre: string;
-    codigo: string;
     puntosGlobales: number;
+    codigo: string;
     mesaID?: {
         prototype?: Types.ObjectId | null;
         cacheHexString?: unknown;

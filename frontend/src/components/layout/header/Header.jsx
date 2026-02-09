@@ -4,7 +4,7 @@ import { GlobalContext } from "../../../context/GlobalContext";
 
 
 export function Header() {
-    const { setEstadoPantalla, cerrarSesionSocket, nombreJugador } = useContext(GlobalContext)
+    const { setEstadoPantalla, cerrarSesion, nombreJugador } = useContext(GlobalContext)
     const [menuAbierto, setMenuAbierto] = useState(false);
 
     return (
@@ -21,7 +21,7 @@ export function Header() {
                         😎 {nombreJugador}
                         {menuAbierto && (
                             <div className="usuario-menu" onClick={(e) => e.stopPropagation()}>
-                                <button onClick={() => { cerrarSesionSocket(); setMenuAbierto(false); }}>
+                                <button onClick={() => { cerrarSesion(); setMenuAbierto(false); }}>
                                     Cerrar Sesión
                                 </button>
                             </div>

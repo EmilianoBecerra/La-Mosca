@@ -13,12 +13,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -32,12 +32,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -51,12 +51,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -91,13 +91,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 }, {}, {}, {}, import("mongoose").Document<unknown, {}, {
     jugadores: Types.DocumentArray<{
@@ -113,12 +113,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -132,12 +132,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -151,12 +151,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -191,13 +191,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 }, {}, import("mongoose").DefaultSchemaOptions> & {
     jugadores: Types.DocumentArray<{
@@ -213,12 +213,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -232,12 +232,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -251,12 +251,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -291,13 +291,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 } & {
     _id: Types.ObjectId;
@@ -317,12 +317,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -336,12 +336,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -355,12 +355,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -395,13 +395,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 }, import("mongoose").Document<unknown, {}, import("mongoose").FlatRecord<{
     jugadores: Types.DocumentArray<{
@@ -417,12 +417,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -436,12 +436,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -455,12 +455,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -495,13 +495,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 }>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<{
     jugadores: Types.DocumentArray<{
@@ -517,12 +517,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }, Types.Subdocument<import("bson").ObjectId, any, {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -536,12 +536,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }> & {
         cartas: Types.DocumentArray<{
             palo?: string | null;
@@ -555,12 +555,12 @@ export declare const mesaModel: import("mongoose").Model<{
         }>;
         descarte: number[];
         nombre?: string | null;
-        puntosGlobales?: number | null;
-        mesaID?: string | null;
         puntos?: number | null;
         posicionMesa?: number | null;
         ready?: boolean | null;
+        mesaID?: string | null;
         listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
     }>;
     mazo: Types.DocumentArray<{
         nombre?: string | null;
@@ -595,13 +595,13 @@ export declare const mesaModel: import("mongoose").Model<{
         } | null;
     }>;
     ganadoresRonda: string[];
-    nombre?: string | null;
     estado?: string | null;
     fase?: string | null;
     triunfo?: string | null;
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    nombre?: string | null;
     inicioRonda?: number | null;
 }> & {
     _id: Types.ObjectId;

@@ -3,13 +3,25 @@ import { io } from "socket.io-client";
 
 export const GlobalContext = createContext(null);
 
-const crearSocket = () => {
-  return io(import.meta.env.VITE_BACKEND_URL || "http://localhost:3000");
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
+const crearSocket = (token) => {
+  return io(BACKEND_URL, {
+    auth: token ? { token } : {},
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000
+  });
 };
 
 export const GlobalContextProvider = (props) => {
-  const socketRef = useRef(crearSocket());
+  const socketRef = useRef(crearSocket(localStorage.getItem("token")));
   const mesaPendienteRef = useRef(null);
+
+  const reconectarSocket = (token) => {
+    socketRef.current.auth = { token };
+    socketRef.current.disconnect().connect();
+  };
 
   const [mesas, setMesas] = useState([]);
   const [mesa, setMesa] = useState(null);
@@ -36,6 +48,9 @@ export const GlobalContextProvider = (props) => {
   const cerrarSesion = useCallback(() => {
     localStorage.removeItem("nombreJugador");
     localStorage.removeItem("codigoJugador");
+    localStorage.removeItem("token");
+    socketRef.current.auth = {};
+    socketRef.current.disconnect().connect();
     setNombreJugador("");
     setNombreGuardado("");
     setAutenticado(false);
@@ -63,24 +78,50 @@ export const GlobalContextProvider = (props) => {
   const cerrarModal = () => {
     setModal({ visible: false, mensaje: "", tipo: "info" });
   };
-  const codigoTempRef = useRef(null);
 
-  const registrarJugador = (nombre, codigo) => {
-    codigoTempRef.current = codigo;
-    socketRef.current.emit("registrar-jugador", nombre, codigo);
-  };
-
-  const loginJugador = (nombre, codigo) => {
-    codigoTempRef.current = codigo;
-    socketRef.current.emit("login", nombre, codigo);
-  };
-
-  const cerrarSesionSocket = () => {
-    const nombre = localStorage.getItem("nombreJugador");
-    if (nombre) {
-      socketRef.current.emit("cerrar-sesion", nombre);
+  const registrarJugador = async (nombre, codigo) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, codigo })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        mostrarModal(data.msg, "error");
+        return;
+      }
+      localStorage.setItem("token", data.data.token);
+      guardarCredenciales(data.data.nombre, codigo);
+      reconectarSocket(data.data.token);
+    } catch (error) {
+      mostrarModal("Error al registrar usuario", "error");
     }
   };
+
+  const loginJugador = async (nombre, codigo) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, codigo })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        mostrarModal(data.msg, "error");
+        if (data.msg === "Jugador no existe") {
+          cerrarSesion();
+        }
+        return;
+      }
+      localStorage.setItem("token", data.data.token);
+      guardarCredenciales(data.data.nombre, codigo);
+      reconectarSocket(data.data.token);
+    } catch (error) {
+      mostrarModal("Error al iniciar sesión", "error");
+    }
+  };
+
   const configurarListeners = useCallback((sock) => {
     sock.on("mesas-disponibles", (mesas) => {
       setMesas(mesas);
@@ -147,8 +188,8 @@ export const GlobalContextProvider = (props) => {
         cartaGanadora,
         cartasJugadas: cartasJugadas || [...rondaActualRef.current]
       });
+      setRondaActual([]);
       setTimeout(() => {
-        setRondaActual([]);
         setResultadoRonda(null);
       }, 2000);
     });
@@ -186,29 +227,6 @@ export const GlobalContextProvider = (props) => {
       setError(msg);
       mostrarModal(msg, "error");
       if (msg === "Jugador no existe" || msg === "Codigo incorrecto o jugador no existe.") {
-        cerrarSesion();
-      }
-    });
-    sock.on("jugador-registrado", (jugador) => {
-      guardarCredenciales(jugador.nombre, codigoTempRef.current);
-    });
-    sock.on("loguear-jugador", (jugador) => {
-      guardarCredenciales(jugador.nombre, codigoTempRef.current);
-    });
-    sock.on("jugador-logueado", () => {
-      mostrarModal("Jugador ya conectado", "error");
-    });
-    sock.on("sesion-cerrada", () => {
-      localStorage.removeItem("codigoJugador");
-      setAutenticado(false);
-      setMesa(null);
-      setMesaId("");
-      setEstadoPantalla("lobby");
-    });
-    sock.on("error-registro", (msg) => {
-      setError(msg);
-      mostrarModal(msg, "error");
-      if (msg === "Error al registrar usuario en base de datos.") {
         cerrarSesion();
       }
     });
@@ -308,20 +326,31 @@ export const GlobalContextProvider = (props) => {
     const socket = socketRef.current;
     configurarListeners(socket);
 
-    const nombreGuardado = localStorage.getItem("nombreJugador");
-    const codigoGuardado = localStorage.getItem("codigoJugador");
-
-    if (nombreGuardado && codigoGuardado) {
-      codigoTempRef.current = codigoGuardado;
-      socket.emit("login", nombreGuardado, codigoGuardado);
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch(`${BACKEND_URL}/auth/verify`, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.ok) {
+            guardarCredenciales(data.data);
+            reconectarSocket(token);
+          } else {
+            localStorage.removeItem("token");
+            cerrarSesion();
+          }
+        })
+        .catch(() => {
+          localStorage.removeItem("token");
+        });
     }
 
     const handleReconnect = () => {
-      const nombre = localStorage.getItem("nombreJugador");
-      const codigo = localStorage.getItem("codigoJugador");
-      if (nombre && codigo) {
-        codigoTempRef.current = codigo;
-        socket.emit("login", nombre, codigo);
+      const token = localStorage.getItem("token");
+      if (token) {
+        socketRef.current.auth = { token };
       }
     };
     socket.io.on("reconnect", handleReconnect);
@@ -375,7 +404,6 @@ export const GlobalContextProvider = (props) => {
       registrarJugador,
       loginJugador,
       cerrarSesion,
-      cerrarSesionSocket,
       crearMesa,
       unirseMesa,
       jugadorListo,
