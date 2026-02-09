@@ -46,7 +46,7 @@ async function iniciarServidor() {
   let mesas: Mesa[] = [];
   mesas = await obtenerTodasLasMesas(mesas);
   const jugadoresConectados: Jugador[] = [];
-  console.log("iniciado")
+
   const mesaController = new MesaController(io, mesas, jugadoresConectados);
   const partidaController = new PartidaController(io, mesas, jugadoresConectados);
   const generalController = new GeneralController(io, mesas, jugadoresConectados);
@@ -66,6 +66,7 @@ async function iniciarServidor() {
   });
 
   io.on("connection", (socket) => {
+    console.log("iniciado")
     const nombre = socket.data.nombre;
     if (nombre) {
       const existente = jugadoresConectados.find(j => j.nombre === nombre);

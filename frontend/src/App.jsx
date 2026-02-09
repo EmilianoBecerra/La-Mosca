@@ -12,6 +12,7 @@ function AppContent() {
   const { autenticado, nombreGuardado, registrarJugador, loginJugador, cerrarSesion } = useContext(GlobalContext);
   const [nombreInput, setNombreInput] = useState("");
   const [codigoInput, setCodigoInput] = useState("");
+  const [modoLogin, setModoLogin] = useState(false);
 
   useEffect(() => {
     if (!autenticado) {
@@ -28,9 +29,15 @@ function AppContent() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (codigoInput.trim().length >= 1) {
-      loginJugador(nombreGuardado, codigoInput.trim());
+    const nombre = nombreGuardado || nombreInput.trim();
+    if (nombre.length >= 2 && codigoInput.trim().length >= 1) {
+      loginJugador(nombre, codigoInput.trim());
     }
+  };
+
+  const toggleModo = () => {
+    setModoLogin(!modoLogin);
+    setCodigoInput("");
   };
 
   if (!autenticado) {
@@ -54,11 +61,10 @@ function AppContent() {
                 <button type="submit" disabled={codigoInput.trim().length < 1}>
                   Entrar
                 </button>
-                <button className="btn-otro-usuario" onClick={() => cerrarSesion()}>
+                <button type="button" className="btn-otro-usuario" onClick={() => cerrarSesion()}>
                   Entrar con otro usuario
                 </button>
               </form>
-
             </div>
           </div>
           <Modal />
@@ -71,8 +77,8 @@ function AppContent() {
         <div className="modal-inicio-overlay">
           <div className="modal-inicio">
             <h2>Bienvenido a La Mosca</h2>
-            <p>Ingresa tu usuario y contraseña para registrarte</p>
-            <form onSubmit={handleRegistro}>
+            <p>{modoLogin ? "Ingresá tus datos para iniciar sesión" : "Ingresá tu usuario y contraseña para registrarte"}</p>
+            <form onSubmit={modoLogin ? handleLogin : handleRegistro}>
               <input
                 type="text"
                 value={nombreInput}
@@ -91,7 +97,10 @@ function AppContent() {
                 minLength={1}
               />
               <button type="submit" disabled={nombreInput.trim().length < 2 || codigoInput.trim().length < 1}>
-                Registrarse
+                {modoLogin ? "Iniciar sesión" : "Registrarse"}
+              </button>
+              <button type="button" className="btn-otro-usuario" onClick={toggleModo}>
+                {modoLogin ? "No tengo cuenta" : "Ya tengo cuenta"}
               </button>
             </form>
           </div>
