@@ -46,5 +46,7 @@ const mesasSchema = new Schema({
     ganadoresRonda: [String],
     ronda: Number
 });
+mesasSchema.index({ "jugadores.nombre": 1 });
+mesasSchema.index({ "estado": 1 });
 export const mesaModel = model("mesa", mesasSchema);
 //# sourceMappingURL=mesasModel.js.map

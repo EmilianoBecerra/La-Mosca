@@ -18,20 +18,20 @@ export function juegaCarta(nombreJugador, carta, nombreMesa, mesas) {
     }
     ;
     if (mesa.estado !== "en-partida") {
-        return { ok: false, msg: "No está en partida" };
+        return { ok: false, msg: "La mesa no está en estado partida" };
     }
     ;
     const numeroJugadores = mesa.jugadores.length;
     const inicioRonda = mesa.inicioRonda ?? mesa.repartidor + 1;
     const turnoJugador = (inicioRonda + mesa.turnoActual) % numeroJugadores;
     if (mesa.jugadores[turnoJugador]?.nombre !== nombreJugador) {
-        return { ok: false, msg: "no es turno del jugador" };
+        return { ok: false, msg: "No es el turno del jugador" };
     }
     ;
     const jugador = mesa.jugadores[turnoJugador];
     const indiceCarta = jugador?.cartas?.findIndex(c => c.palo === carta.palo && c.numero === carta.numero);
     if (indiceCarta === undefined || indiceCarta === -1) {
-        return { ok: false, msg: "No existe carta" };
+        return { ok: false, msg: "No existe la carta " };
     }
     ;
     jugador?.cartas?.splice(indiceCarta, 1);
@@ -48,11 +48,17 @@ export async function finalizarPartida(nombreMesa, mesas) {
         return { ok: true, msg: "La partida ya terminó" };
     }
     if (!ganadorPartida) {
+        //Tener en cuenta si agrego surrender.
         return { ok: false, msg: "Nadie gano todavia" };
     }
     mesa.estado = "fin-partida";
     mesa.fase = "fin-partida";
-    await jugadorModel.findOneAndUpdate({ nombre: ganadorPartida.nombre }, { $inc: { puntosGlobales: 1 } });
-    return { ok: true, msg: "Partida terminada", data: { mesa, jugador: ganadorPartida } };
+    try {
+        await jugadorModel.findOneAndUpdate({ nombre: ganadorPartida.nombre }, { $inc: { puntosGlobales: 1 } });
+        return { ok: true, msg: "Partida terminada", data: { mesa, jugador: ganadorPartida } };
+    }
+    catch (error) {
+        return { ok: false, msg: "Error al actualizar puntos del jugador en BD" };
+    }
 }
 //# sourceMappingURL=partida.js.map

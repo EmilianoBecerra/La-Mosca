@@ -9,6 +9,7 @@ import { buscarMesaDeJugador, obtenerTodasLasMesas } from "./utils/mesa.js";
 import { GeneralController } from "./socket/GeneralController.js";
 import authRoutes from "./routes/auth.js";
 import jwt, {} from "jsonwebtoken";
+import compression from "compression";
 const app = express();
 const server = createServer(app);
 const PORT = Number(process.env.PORT) || 3000;
@@ -18,6 +19,7 @@ const io = new Server(server, {
         origin: CORS_ORIGIN
     }
 });
+app.use(compression());
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", CORS_ORIGIN);
     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -41,7 +43,6 @@ async function iniciarServidor() {
     let mesas = [];
     mesas = await obtenerTodasLasMesas(mesas);
     const jugadoresConectados = [];
-    console.log("iniciado");
     const mesaController = new MesaController(io, mesas, jugadoresConectados);
     const partidaController = new PartidaController(io, mesas, jugadoresConectados);
     const generalController = new GeneralController(io, mesas, jugadoresConectados);
@@ -71,10 +72,13 @@ async function iniciarServidor() {
             }
         }
         if (nombre) {
-            const { mesa } = buscarMesaDeJugador(nombre, mesas);
-            if (mesa) {
-                socket.join(mesa.nombre);
-                socket.emit("reconectar-partida", mesa);
+            const resultado = buscarMesaDeJugador(nombre, mesas);
+            if (resultado.data) {
+                const { mesa } = resultado.data;
+                if (mesa) {
+                    socket.join(mesa.nombre);
+                    socket.emit("reconectar-partida", mesa);
+                }
             }
         }
         socket.emit("mesas-disponibles", mesas);

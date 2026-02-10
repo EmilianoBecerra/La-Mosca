@@ -8,6 +8,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const crearSocket = (token) => {
   return io(BACKEND_URL, {
     auth: token ? { token } : {},
+    transports: ["websocket"],
     reconnectionAttempts: 10,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000
@@ -35,11 +36,8 @@ export const GlobalContextProvider = (props) => {
   });
   const [autenticado, setAutenticado] = useState(false);
 
-  const guardarCredenciales = useCallback((nombre, codigo) => {
+  const guardarCredenciales = useCallback((nombre) => {
     localStorage.setItem("nombreJugador", nombre);
-    if (codigo) {
-      localStorage.setItem("codigoJugador", codigo);
-    }
     setNombreJugador(nombre);
     setNombreGuardado(nombre);
     setAutenticado(true);
@@ -47,7 +45,6 @@ export const GlobalContextProvider = (props) => {
 
   const cerrarSesion = useCallback(() => {
     localStorage.removeItem("nombreJugador");
-    localStorage.removeItem("codigoJugador");
     localStorage.removeItem("token");
     socketRef.current.auth = {};
     socketRef.current.disconnect().connect();
@@ -69,12 +66,11 @@ export const GlobalContextProvider = (props) => {
   const [resultadoRonda, setResultadoRonda] = useState(null);
   const [finPartida, setFinPartida] = useState(null);
   const [ranking, setRanking] = useState([]);
-  const [modal, setModal] = useState({ visible: false, mensaje: "", tipo: "info" });
 
+  const [modal, setModal] = useState({ visible: false, mensaje: "", tipo: "info" });
   const mostrarModal = useCallback((mensaje, tipo = "info") => {
     setModal({ visible: true, mensaje, tipo });
   }, []);
-
   const cerrarModal = () => {
     setModal({ visible: false, mensaje: "", tipo: "info" });
   };
@@ -92,10 +88,10 @@ export const GlobalContextProvider = (props) => {
         return;
       }
       localStorage.setItem("token", data.data.token);
-      guardarCredenciales(data.data.nombre, codigo);
+      guardarCredenciales(data.data.nombre);
       reconectarSocket(data.data.token);
     } catch (error) {
-      mostrarModal("Error al registrar usuario", "error");
+      mostrarModal("Error solicitud de registro de usuario", "error");
     }
   };
 
@@ -115,10 +111,10 @@ export const GlobalContextProvider = (props) => {
         return;
       }
       localStorage.setItem("token", data.data.token);
-      guardarCredenciales(data.data.nombre, codigo);
+      guardarCredenciales(data.data.nombre);
       reconectarSocket(data.data.token);
     } catch (error) {
-      mostrarModal("Error al iniciar sesión", "error");
+      mostrarModal("Error en solicitud de login", "error");
     }
   };
 
@@ -360,7 +356,7 @@ export const GlobalContextProvider = (props) => {
       socket.io.off("reconnect", handleReconnect);
     };
   }, [configurarListeners]);
-  
+
   useEffect(() => {
     const enMesaOPartida = (estadoPantalla === "en-partida" || estadoPantalla === "mesa") && mesa?._id;
 

@@ -10,7 +10,7 @@ import { buscarMesaDeJugador, obtenerTodasLasMesas } from "./utils/mesa.js";
 import { GeneralController } from "./socket/GeneralController.js";
 import authRoutes from "./routes/auth.js";
 import jwt, { type JwtPayload, type VerifyErrors } from "jsonwebtoken";
-
+import compression from "compression";
 
 const app = express();
 const server = createServer(app);
@@ -22,6 +22,7 @@ const io = new Server(server, {
   }
 });
 
+app.use(compression());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", CORS_ORIGIN);
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -66,7 +67,6 @@ async function iniciarServidor() {
   });
 
   io.on("connection", (socket) => {
-    console.log("iniciado")
     const nombre = socket.data.nombre;
     if (nombre) {
       const existente = jugadoresConectados.find(j => j.nombre === nombre);
@@ -78,10 +78,13 @@ async function iniciarServidor() {
     }
 
     if (nombre) {
-      const { mesa } = buscarMesaDeJugador(nombre, mesas);
-      if (mesa) {
-        socket.join(mesa.nombre);
-        socket.emit("reconectar-partida", mesa);
+      const resultado = buscarMesaDeJugador(nombre, mesas);
+      if (resultado.data) {
+        const { mesa } = resultado.data;
+        if (mesa) {
+          socket.join(mesa.nombre);
+          socket.emit("reconectar-partida", mesa);
+        }
       }
     }
 

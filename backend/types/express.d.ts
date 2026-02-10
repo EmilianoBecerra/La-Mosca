@@ -5,3 +5,7 @@ declare module "express-serve-static-core" {
     user?: JwtPayload | undefined;
   }
 }
+
+export type DataReturn =
+  | { ok: true, msg: string, data: { mesa?: Mesa, jugador?: Jugador } }
+  | { ok: false, msg: string }

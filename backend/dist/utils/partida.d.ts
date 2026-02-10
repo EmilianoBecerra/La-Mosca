@@ -1,4 +1,4 @@
-import type { Carta, Jugador, Mesa } from "../interfaces.js";
+import type { Carta, Mesa } from "../interfaces.js";
 export declare function determinarGanador(cartasJugadas: {
     nombre: string;
     carta: Carta;
@@ -18,7 +18,7 @@ export declare function juegaCarta(nombreJugador: string, carta: Carta, nombreMe
     msg: string;
     data: {
         mesa: Mesa;
-        jugador: Jugador;
+        jugador: import("../interfaces.js").Jugador;
     };
 };
 export declare function finalizarPartida(nombreMesa: string, mesas: Mesa[]): Promise<{
@@ -30,7 +30,7 @@ export declare function finalizarPartida(nombreMesa: string, mesas: Mesa[]): Pro
     msg: string;
     data: {
         mesa: Mesa;
-        jugador: Jugador;
+        jugador: import("../interfaces.js").Jugador;
     };
 }>;
 //# sourceMappingURL=partida.d.ts.map

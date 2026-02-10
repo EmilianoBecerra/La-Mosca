@@ -13,10 +13,15 @@ export class GeneralController {
   }
 
   async mostrarRanking(socket: Socket) {
-    const jugadores = await devolverJugadoresRanking();
-    if (!jugadores) {
-      socket.emit("error", "error al encontrar jugadores globales");
+    try {
+      const jugadores = await devolverJugadoresRanking();
+      if (!jugadores) {
+        socket.emit("error", "error al encontrar jugadores globales");
+      }
+      this.io.emit("ranking-global", jugadores.data);
+    } catch (error) {
+      console.error("Error al mostrar ranking global");
+      socket.emit("error", "Error al mostrar ranking global");
     }
-    this.io.emit("ranking-global", jugadores.data);
   }
 }
