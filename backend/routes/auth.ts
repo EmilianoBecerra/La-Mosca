@@ -1,26 +1,28 @@
 import { Router } from "express";
 import { jugadorModel } from "../model/JugadorModel.js";
 import { authToken, generarToken } from "../middleware/jwt.middleware.js";
-
+import { hashPass, verificarPass } from "../utils/user.js";
 const router = Router();
 
 router.post("/register", async (req, res) => {
   try {
-    const { nombre, codigo } = req.body;
-    if (!nombre || !codigo) {
+    const { nombre, password } = req.body;
+    if (!nombre || !password) {
       return res.status(400).send({ ok: false, msg: "Faltan campos obligatorios" });
     }
 
     const nombreSanitizado = nombre.toLocaleLowerCase();
     const nombreExiste = await jugadorModel.findOne({ nombre: nombreSanitizado });
 
+    const hashPassword = await hashPass(password);
+
     if (nombreExiste) {
       return res.status(400).send({ ok: false, msg: "Ya existe un jugador con ese nombre" });
     }
 
-    const jugadorBD = await jugadorModel.create({ nombre: nombreSanitizado, codigo });
-    const token = generarToken({ nombre: jugadorBD.nombre, password: codigo });
+    const jugadorBD = await jugadorModel.create({ nombre: nombreSanitizado, password: hashPassword });
 
+    const token = generarToken({ nombre: jugadorBD.nombre, password: hashPassword });
     if (!token) {
       return res.status(500).send({ ok: false, msg: "Error al generar token" });
     }
@@ -39,8 +41,8 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { nombre, codigo } = req.body;
-    if (!nombre || !codigo) {
+    const { nombre, password } = req.body;
+    if (!nombre || !password) {
       return res.status(400).send({ ok: false, msg: "Faltan campos obligatorios" });
     }
 
@@ -51,21 +53,25 @@ router.post("/login", async (req, res) => {
       return res.status(400).send({ ok: false, msg: "Jugador no existe" });
     }
 
-    if (jugadorDB.codigo !== codigo) {
+    const verifyPassword = verificarPass(password, jugadorDB.password);
+
+    if (!verifyPassword) {
       return res.status(400).send({ ok: false, msg: "Contraseña incorrecta" });
     }
 
-    const token = generarToken({ nombre: jugadorDB.nombre, password: codigo });
+    if (verifyPassword) {
+      const token = generarToken({ nombre: jugadorDB.nombre, password: password });
 
-    if (!token) {
-      return res.status(500).send({ ok: false, msg: "Error al generar token" });
+      if (!token) {
+        return res.status(500).send({ ok: false, msg: "Error al generar token" });
+      }
+
+      return res.status(200).send({
+        ok: true,
+        msg: "Login exitoso",
+        data: { nombre: jugadorDB.nombre, token }
+      });
     }
-
-    return res.status(200).send({
-      ok: true,
-      msg: "Login exitoso",
-      data: { nombre: jugadorDB.nombre, token }
-    });
   } catch (error) {
     console.error("Error en login:", error);
     return res.status(500).send({ ok: false, msg: "Error en el login" });
@@ -77,12 +83,12 @@ router.post("/verify", authToken, async (req, res) => {
     if (req.user) {
       const { nombre } = req.user;
       const jugadorExiste = await jugadorModel.findOne({ nombre });
-      if(!jugadorExiste){
-        return res.status(400).send({ok: false, msg: "Jugador no existe"});
+      if (!jugadorExiste) {
+        return res.status(400).send({ ok: false, msg: "Jugador no existe" });
       }
-      return res.status(200).send({ok:true, msg:"Jugador existe", data: nombre});
+      return res.status(200).send({ ok: true, msg: "Jugador existe", data: nombre });
     }
-    return res.status(401).send({ok: false, msg: "No autorizado"});
+    return res.status(401).send({ ok: false, msg: "No autorizado" });
   } catch (error) {
     console.error("Error en el login", error);
     return res.status(500).send({ ok: false, msg: "Error en el login" })

@@ -50,7 +50,7 @@ function AppContent() {
               <p>Ingresa tu contraseña para continuar</p>
               <form onSubmit={handleLogin}>
                 <input
-                  type="text"
+                  type="password"
                   value={codigoInput}
                   onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
                   placeholder="Contraseña"
@@ -89,20 +89,20 @@ function AppContent() {
                 autoFocus
               />
               <input
-                type="text"
+                type="password"
                 value={codigoInput}
                 onChange={(e) => setCodigoInput(sanitizar(e.target.value))}
                 placeholder="Contraseña"
                 maxLength={20}
                 minLength={1}
               />
-              <button type="submit" disabled={nombreInput.trim().length < 2 || codigoInput.trim().length < 1}>
+              <button type="submit" className='registrarse' disabled={nombreInput.trim().length < 2 || codigoInput.trim().length < 1}>
                 {modoLogin ? "Iniciar sesión" : "Registrarse"}
               </button>
-              <button type="button" className="btn-otro-usuario" onClick={toggleModo}>
-                {modoLogin ? "No tengo cuenta" : "Ya tengo cuenta"}
-              </button>
             </form>
+            <button type="button" className="btn-otro-usuario" onClick={toggleModo} style={{ display: modoLogin ? "none" : "block" }}>
+              {modoLogin ? "No tengo cuenta" : "Ya tengo cuenta"}
+            </button>
           </div>
         </div>
         <Modal />

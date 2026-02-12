@@ -6,7 +6,7 @@ const jugadorSchema = new Schema({
     unique: true,
     required: true
   },
-  codigo: {
+  password: {
     type: String,
     required: true
   },
@@ -18,7 +18,7 @@ const jugadorSchema = new Schema({
     type: Types.ObjectId,
     default: null
   },
-  
+
 });
 
 export const jugadorModel = model("jugador", jugadorSchema);

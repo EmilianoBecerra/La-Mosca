@@ -5,7 +5,7 @@ const jugadorSchema = new Schema({
         unique: true,
         required: true
     },
-    codigo: {
+    password: {
         type: String,
         required: true
     },

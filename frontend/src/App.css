@@ -69,7 +69,8 @@
   border-color: #4a90d9;
 }
 
-.modal-inicio button {
+
+.modal-inicio .registrarse {
   padding: 14px 24px;
   background: linear-gradient(135deg, #4a90d9 0%, #357abd 100%);
   color: white;
@@ -79,26 +80,29 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 10px;
+}
+
+.btn-otro-usuario {
+  border: none;
+  color: #357abd;
+  font-weight: bold;
+  background-color: transparent;
+  cursor: pointer;
+  margin: auto;
+  font-size: 14px;
 }
 
 .nombreUsuario {
   text-transform: capitalize;
 }
 
-.btn-otro-usuario {
-  background: transparent !important;
-  color: #4a90d9 !important;
-  border: 1px solid #4a90d9 !important;
-  margin-top: 4px;
-  font-size: 14px !important;
-}
-
-.modal-inicio button:hover:not(:disabled) {
+.modal-inicio .registrarse:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 144, 217, 0.4);
 }
 
-.modal-inicio button:disabled {
+.modal-inicio .registrarse:disabled {
   background: #ccc;
   cursor: not-allowed;
 }

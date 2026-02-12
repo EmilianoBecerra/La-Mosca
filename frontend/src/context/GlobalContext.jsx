@@ -75,12 +75,12 @@ export const GlobalContextProvider = (props) => {
     setModal({ visible: false, mensaje: "", tipo: "info" });
   };
 
-  const registrarJugador = async (nombre, codigo) => {
+  const registrarJugador = async (nombre, password) => {
     try {
       const res = await fetch(`${BACKEND_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, codigo })
+        body: JSON.stringify({ nombre, password })
       });
       const data = await res.json();
       if (!data.ok) {
@@ -95,12 +95,12 @@ export const GlobalContextProvider = (props) => {
     }
   };
 
-  const loginJugador = async (nombre, codigo) => {
+  const loginJugador = async (nombre, password) => {
     try {
       const res = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, codigo })
+        body: JSON.stringify({ nombre, password })
       });
       const data = await res.json();
       if (!data.ok) {
@@ -222,7 +222,7 @@ export const GlobalContextProvider = (props) => {
     sock.on("error", (msg) => {
       setError(msg);
       mostrarModal(msg, "error");
-      if (msg === "Jugador no existe" || msg === "Codigo incorrecto o jugador no existe.") {
+      if (msg === "Jugador no existe" || msg === "password incorrecto o jugador no existe.") {
         cerrarSesion();
       }
     });
