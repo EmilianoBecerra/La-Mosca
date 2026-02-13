@@ -16,9 +16,11 @@ export interface Mesa {
   ronda: number
 }
 
+
 export interface Jugador {
   nombre: string,
   socketId?: string,
+  windowId?: string,
   mesaID?: string,
   cartas?: Carta[],
   posicionMesa?: number,

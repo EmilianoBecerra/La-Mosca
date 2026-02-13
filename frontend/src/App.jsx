@@ -58,7 +58,7 @@ function AppContent() {
                   minLength={1}
                   autoFocus
                 />
-                <button type="submit" disabled={codigoInput.trim().length < 1}>
+                <button type="submit" className='registrarse' disabled={codigoInput.trim().length < 1}>
                   Entrar
                 </button>
                 <button type="button" className="btn-otro-usuario" onClick={() => cerrarSesion()}>

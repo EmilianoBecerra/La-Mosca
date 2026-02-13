@@ -1,5 +1,5 @@
 import { buscarMesaDeJugador, crearMesa, descartar, obtenerMesasLobby, obtenerTodasLasMesas, realizarDescarte, salirDeMesa, unirseAMesa } from "../utils/mesa.js";
-import { crearMazo, descartarCartas, mezclarMazo, repartirCartas, repartirPostDescarte } from "../utils/cartas.js";
+import { crearMazo, mezclarMazo, repartirCartas, repartirPostDescarte } from "../utils/cartas.js";
 export class MesaController {
     io;
     mesas;
@@ -35,7 +35,7 @@ export class MesaController {
     ;
     async crearNuevaMesa(socket, nombreJugador, nombreMesa) {
         try {
-            const mesaNueva = await crearMesa(nombreJugador, nombreMesa, this.mesas);
+            const mesaNueva = await crearMesa(nombreJugador, nombreMesa, this.mesas, socket.data.windowId);
             if (!mesaNueva.ok) {
                 socket.emit("error", "Error al crear Mesa nueva");
                 return;
@@ -58,7 +58,7 @@ export class MesaController {
     }
     async sumarJugador(socket, nombreJugador, nombreMesa) {
         try {
-            const resultado = await unirseAMesa(nombreJugador, this.jugadoresConectados, nombreMesa, this.mesas);
+            const resultado = await unirseAMesa(nombreJugador, this.jugadoresConectados, nombreMesa, this.mesas, socket.data.windowId);
             if (!resultado?.ok) {
                 socket.emit("error", resultado.msg);
                 return;

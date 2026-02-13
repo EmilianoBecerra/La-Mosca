@@ -5,7 +5,7 @@ import { descartarCartas } from "./cartas.js";
 
 
 
-export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[]): Promise<DataReturn> {
+export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn> {
   try {
     await obtenerTodasLasMesas(mesas);
   } catch (error) {
@@ -26,6 +26,7 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
     estado: "esperando-jugadores",
     fase: "esperando-jugadores-ready",
     jugadores: [{
+      windowId: id,
       nombre: nombreJugador,
       mesaID: nombreMesa,
       cartas: [],
@@ -53,7 +54,7 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
   return { ok: true, msg: "Mesa creada", data: { mesa: nuevaMesa } };
 }
 
-export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[]): Promise<DataReturn> {
+export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn> {
   try {
     await obtenerTodasLasMesas(mesas);
   } catch (error) {
@@ -87,6 +88,7 @@ export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], n
   }
   const nuevoJugador = {
     nombre: jugador.nombre,
+    windowId: id,
     cartas: [],
     posicionMesa: mesaActual.jugadores.length,
     puntos: 20,
@@ -215,7 +217,7 @@ export function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]) {
 }
 
 export async function obtenerMesasLobby() {
-  const mesasLobby = mesaModel.find({ estado: "esperando-jugadores" }).select("nombre estado jugadores.nombre jugadores.puntos");
+  const mesasLobby = mesaModel.find().select("nombre estado jugadores.nombre jugadores.puntos");
   return mesasLobby;
 };
 

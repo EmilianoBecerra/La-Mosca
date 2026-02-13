@@ -5,10 +5,17 @@ export const GlobalContext = createContext(null);
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
+let windowId = sessionStorage.getItem("windowId");
+if (!windowId) {
+  windowId = crypto.randomUUID();
+  sessionStorage.setItem("windowId", windowId);
+}
+
 const crearSocket = (token) => {
   return io(BACKEND_URL, {
-    auth: token ? { token } : {},
+    auth: token ? { token, windowId } : { windowId },
     transports: ["websocket"],
+    autoConnect: false,
     reconnectionAttempts: 10,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000
@@ -16,12 +23,14 @@ const crearSocket = (token) => {
 };
 
 export const GlobalContextProvider = (props) => {
-  const socketRef = useRef(crearSocket(localStorage.getItem("token")));
+  const socketRef = useRef(null);
+  if (socketRef.current === null) {
+    socketRef.current = crearSocket(localStorage.getItem("token"));
+  }
   const mesaPendienteRef = useRef(null);
 
-  const reconectarSocket = (token) => {
-    socketRef.current.auth = { token };
-    socketRef.current.disconnect().connect();
+  const autenticarSocket = (token) => {
+    socketRef.current.emit("autenticar", token);
   };
 
   const [mesas, setMesas] = useState([]);
@@ -89,7 +98,7 @@ export const GlobalContextProvider = (props) => {
       }
       localStorage.setItem("token", data.data.token);
       guardarCredenciales(data.data.nombre);
-      reconectarSocket(data.data.token);
+      autenticarSocket(data.data.token);
     } catch (error) {
       mostrarModal("Error solicitud de registro de usuario", "error");
     }
@@ -112,7 +121,7 @@ export const GlobalContextProvider = (props) => {
       }
       localStorage.setItem("token", data.data.token);
       guardarCredenciales(data.data.nombre);
-      reconectarSocket(data.data.token);
+      autenticarSocket(data.data.token);
     } catch (error) {
       mostrarModal("Error en solicitud de login", "error");
     }
@@ -239,6 +248,14 @@ export const GlobalContextProvider = (props) => {
       setMesaId("");
       setEstadoPantalla("lobby");
     });
+    sock.on("otra-ventana", () => {
+      sock.disconnect();
+      setAutenticado(false);
+      setMesa(null);
+      setMesaId("");
+      setEstadoPantalla("lobby");
+      mostrarModal("Se inició sesión en otra ventana. Esta sesión fue cerrada.", "error");
+    });
     sock.on("reconectar-partida", (mesaRecibida) => {
       setMesa(mesaRecibida);
       setMesaId(mesaRecibida._id || mesaRecibida.nombre);
@@ -322,6 +339,18 @@ export const GlobalContextProvider = (props) => {
     const socket = socketRef.current;
     configurarListeners(socket);
 
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.on("connect", () => {
+      socket.emit("pedir-mesas");
+    });
+
+    if (socket.connected) {
+      socket.emit("pedir-mesas");
+    }
+
     const token = localStorage.getItem("token");
     if (token) {
       fetch(`${BACKEND_URL}/auth/verify`, {
@@ -332,7 +361,6 @@ export const GlobalContextProvider = (props) => {
         .then(data => {
           if (data.ok) {
             guardarCredenciales(data.data);
-            reconectarSocket(token);
           } else {
             localStorage.removeItem("token");
             cerrarSesion();
@@ -346,7 +374,7 @@ export const GlobalContextProvider = (props) => {
     const handleReconnect = () => {
       const token = localStorage.getItem("token");
       if (token) {
-        socketRef.current.auth = { token };
+        socketRef.current.auth = { token, windowId };
       }
     };
     socket.io.on("reconnect", handleReconnect);
@@ -368,21 +396,10 @@ export const GlobalContextProvider = (props) => {
       }
     };
 
-    const handleUnload = () => {
-      if (enMesaOPartida) {
-        const nombre = localStorage.getItem("nombreJugador");
-        if (nombre) {
-          socketRef.current.emit("salir-mesa", nombre);
-        }
-      }
-    };
-
     window.addEventListener("beforeunload", handleBeforeUnload);
-    window.addEventListener("unload", handleUnload);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
-      window.removeEventListener("unload", handleUnload);
     };
   }, [estadoPantalla, mesa?._id]);
 

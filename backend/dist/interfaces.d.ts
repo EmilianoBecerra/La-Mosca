@@ -20,6 +20,7 @@ export interface Mesa {
 export interface Jugador {
     nombre: string;
     socketId?: string;
+    windowId?: string;
     mesaID?: string;
     cartas?: Carta[];
     posicionMesa?: number;

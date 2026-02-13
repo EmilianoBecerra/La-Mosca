@@ -6,7 +6,7 @@ import { conectarDB } from "./db/config.js";
 import { MesaController } from "./socket/MesaController.js";
 import { PartidaController } from "./socket/PartidaController.js";
 import type { Jugador, Mesa } from "./interfaces.js";
-import { buscarMesaDeJugador, obtenerTodasLasMesas } from "./utils/mesa.js";
+import { buscarMesaDeJugador, obtenerMesasLobby, obtenerTodasLasMesas } from "./utils/mesa.js";
 import { GeneralController } from "./socket/GeneralController.js";
 import authRoutes from "./routes/auth.js";
 import jwt, { type JwtPayload, type VerifyErrors } from "jsonwebtoken";
@@ -55,6 +55,7 @@ async function iniciarServidor() {
 
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
+    socket.data.windowId = socket.handshake.auth.windowId;
     if (!token || !PRIVATE_KEY) {
       return next();
     }
@@ -67,17 +68,29 @@ async function iniciarServidor() {
   });
 
   io.on("connection", (socket) => {
+    socket.on("pedir-mesas", async () => {
+      const mesasLobby = await obtenerMesasLobby();
+      socket.emit("mesas-disponibles", mesasLobby);
+    });
+    
     const nombre = socket.data.nombre;
+    const windowId = socket.data.windowId;
     if (nombre) {
       const existente = jugadoresConectados.find(j => j.nombre === nombre);
-      if (existente) {
-        existente.socketId = socket.id;
+      if (existente && existente.windowId !== windowId) {
+        if (existente.socketId) {
+          io.to(existente.socketId).emit("otra-ventana");
+          existente.socketId = socket.id;
+          existente.windowId = windowId;
+        }
+      } else if (existente) {
+        if (existente.socketId) {
+          existente.socketId = socket.id;
+        }
       } else {
-        jugadoresConectados.push({ nombre, socketId: socket.id });
+        jugadoresConectados.push({ nombre, socketId: socket.id, windowId });
       }
-    }
 
-    if (nombre) {
       const resultado = buscarMesaDeJugador(nombre, mesas);
       if (resultado.data) {
         const { mesa } = resultado.data;
@@ -87,11 +100,35 @@ async function iniciarServidor() {
         }
       }
     }
-
-    socket.emit("mesas-disponibles", mesas);
+    obtenerMesasLobby().then(mesasLobby => {
+      socket.emit("mesas-disponibles", mesasLobby);
+    });
     mesaController.registrar(socket);
     partidaController.registrar(socket);
     generalController.registrar(socket);
+
+
+
+    socket.on("autenticar", (token: string) => {
+      if (!token || !PRIVATE_KEY) return;
+      jwt.verify(token, PRIVATE_KEY, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
+        if (error) return;
+        const payload = decoded as JwtPayload;
+        const nombre = payload.nombre;
+        socket.data.nombre = nombre;
+
+        const existente = jugadoresConectados.find(j => j.nombre === nombre);
+        if (existente && existente.windowId !== windowId && existente.socketId) {
+          io.to(existente.socketId).emit("otra-ventana");
+          existente.socketId = socket.id;
+          existente.windowId = windowId;
+        } else if (existente) {
+          existente.socketId = socket.id;
+        } else {
+          jugadoresConectados.push({ nombre, socketId: socket.id, windowId });
+        }
+      });
+    });
 
     socket.on("disconnect", () => {
       const index = jugadoresConectados.findIndex(j => j.socketId === socket.id);

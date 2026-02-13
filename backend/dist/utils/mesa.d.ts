@@ -1,7 +1,7 @@
 import type { Jugador, Mesa } from "../interfaces.js";
 import type { DataReturn } from "../types/express.js";
-export declare function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[]): Promise<DataReturn>;
-export declare function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[]): Promise<DataReturn>;
+export declare function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn>;
+export declare function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn>;
 export declare function realizarDescarte(nombreJugador: string, indices: number[], nombreMesa: string, mesas: Mesa[]): DataReturn;
 export declare function descartar(mesa: Mesa, jugadores: Jugador[]): {
     ok: boolean;
