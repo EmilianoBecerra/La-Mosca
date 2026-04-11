@@ -5,21 +5,20 @@ import type { Jugador } from "../interfaces.js";
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 interface USERJWT {
+  email?: string,
   nombre: string,
-  password: string
 }
 
 export const generarToken = (user: USERJWT) => {
   if (PRIVATE_KEY !== undefined) {
-    const token = jwt.sign({ nombre: user.nombre }, PRIVATE_KEY, { expiresIn: "24h" });
+    const token = jwt.sign({ email: user.email, nombre: user.nombre }, PRIVATE_KEY, { expiresIn: "24h" });
     return token;
   }
 }
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(400).send({ ok: false, msg: "Usuario no registrado" });
-  const token = authHeader.split(" ")[1];
+  const token = req.cookies.token;
+  if (!token) return res.status(400).send({ ok: false, msg: "Usuario no registrado" });
   if (typeof (token) === "string" && PRIVATE_KEY !== undefined) {
     jwt.verify(token, PRIVATE_KEY, (error, credentials) => {
       if (error) return res.status(403).send({ error: "Error al comprobar credenciales" })
@@ -27,6 +26,5 @@ export const authToken = (req: Request, res: Response, next: NextFunction) => {
       next()
     })
   }
-
 }
 

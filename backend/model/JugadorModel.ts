@@ -1,6 +1,20 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, Types, model, type Document } from "mongoose";
 
-const jugadorSchema = new Schema({
+export interface IJugador extends Document {
+  email: string;
+  nombre: string;
+  password?: string;
+  googleId?: string;
+  puntosGlobales: number;
+  mesaID?: Types.ObjectId;
+}
+
+const jugadorSchema = new Schema<IJugador>({
+  email: {
+    type: String,
+    unique: true,
+    required: true
+  },
   nombre: {
     type: String,
     unique: true,
@@ -8,7 +22,11 @@ const jugadorSchema = new Schema({
   },
   password: {
     type: String,
-    required: true
+    required: false
+  },
+  googleId: {
+    type: String,
+    default: null
   },
   puntosGlobales: {
     type: Number,
@@ -20,5 +38,4 @@ const jugadorSchema = new Schema({
   }
 });
 
-export const jugadorModel = model("jugador", jugadorSchema);
-
+export const jugadorModel = model<IJugador>( "jugador", jugadorSchema );

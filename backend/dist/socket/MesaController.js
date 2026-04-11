@@ -10,11 +10,11 @@ export class MesaController {
         this.jugadoresConectados = jugadoresConectados;
     }
     registrar(socket) {
-        socket.on("crear-mesa", (nombreJugador, nombreMesa) => {
-            this.crearNuevaMesa(socket, nombreJugador, nombreMesa);
+        socket.on("crear-mesa", (nombreJugador, nombreMesa, password) => {
+            this.crearNuevaMesa(socket, nombreJugador, nombreMesa, password);
         });
-        socket.on("ingresar-en-mesa", (nombreJugador, nombreMesa) => {
-            this.sumarJugador(socket, nombreJugador, nombreMesa);
+        socket.on("ingresar-en-mesa", (nombreJugador, nombreMesa, password) => {
+            this.sumarJugador(socket, nombreJugador, nombreMesa, password);
         });
         socket.on("salir-mesa", (nombreJugador) => {
             this.sacarJugador(socket, nombreJugador);
@@ -33,9 +33,9 @@ export class MesaController {
         });
     }
     ;
-    async crearNuevaMesa(socket, nombreJugador, nombreMesa) {
+    async crearNuevaMesa(socket, nombreJugador, nombreMesa, password) {
         try {
-            const mesaNueva = await crearMesa(nombreJugador, nombreMesa, this.mesas, socket.data.windowId);
+            const mesaNueva = await crearMesa(nombreJugador, nombreMesa, this.mesas, socket.data.windowId, password);
             if (!mesaNueva.ok) {
                 socket.emit("error", "Error al crear Mesa nueva");
                 return;
@@ -48,7 +48,7 @@ export class MesaController {
             if (mesaNueva.data.mesa?.nombre) {
                 socket.join(mesaNueva.data.mesa.nombre);
                 await this.sincronizarYEmitirMesas(socket);
-                socket.emit("mesa_creada_exito", mesaNueva.data.mesa.nombre);
+                socket.emit("mesa_creada_exito", mesaNueva.data.mesa);
             }
         }
         catch (error) {
@@ -56,9 +56,9 @@ export class MesaController {
             socket.emit("error", "Error al crear Mesa nueva");
         }
     }
-    async sumarJugador(socket, nombreJugador, nombreMesa) {
+    async sumarJugador(socket, nombreJugador, nombreMesa, password) {
         try {
-            const resultado = await unirseAMesa(nombreJugador, this.jugadoresConectados, nombreMesa, this.mesas, socket.data.windowId);
+            const resultado = await unirseAMesa(nombreJugador, this.jugadoresConectados, nombreMesa, this.mesas, socket.data.windowId, password);
             if (!resultado?.ok) {
                 socket.emit("error", resultado.msg);
                 return;

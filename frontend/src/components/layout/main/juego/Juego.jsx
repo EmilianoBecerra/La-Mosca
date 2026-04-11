@@ -1,7 +1,7 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { GlobalContext } from "../../../../context/GlobalContext";
+import { useEffect, useRef } from "react";
 import "./Juego.css";
 import { Buttons } from "../../../parts/Buttons";
+import { useJuego } from "../../../../hooks/useJuego";
 
 const ICONOS_PALO = {
   oro: "🪙",
@@ -16,8 +16,10 @@ const capitalizarNombre = (nombre) => {
 };
 
 export function Juego() {
-  const { mesa, nombreJugador, descartarCartas, jugarCarta, rondaActual, resultadoRonda, salirMesa } = useContext(GlobalContext);
-  const [cartasSeleccionadas, setCartasSeleccionadas] = useState([]);
+  const {
+    mesa, nombre, rondaActual, resultadoRonda, cartasSeleccionadas, setCartasSeleccionadas, descartarCartas, jugarCarta, salirMesa
+  } = useJuego()
+
   const mesaRef = useRef(null);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export function Juego() {
     if (mesa.estado === "en-partida") {
       setCartasSeleccionadas([]); // eslint-disable-line react-hooks/set-state-in-effect
     }
-  }, [mesa]);
+  }, [mesa, setCartasSeleccionadas]);
 
   useEffect(() => {
     if (mesa?.estado === "descarte" || mesa?.estado === "en-partida") {
@@ -36,14 +38,14 @@ export function Juego() {
 
   if (!mesa) return null;
 
-  const miJugador = mesa.jugadores.find(j => j.nombre === nombreJugador);
-  const otrosJugadores = mesa.jugadores.filter(j => j.nombre !== nombreJugador);
+  const miJugador = mesa.jugadores.find(j => j.nombre === nombre);
+  const otrosJugadores = mesa.jugadores.filter(j => j.nombre !== nombre);
 
   const numeroJugadores = mesa.jugadores.length;
   const inicioRonda = mesa.inicioRonda ?? ((mesa.repartidor + 1) % numeroJugadores);
   const turnoIndex = (inicioRonda + mesa.turnoActual) % numeroJugadores;
   const jugadorEnTurno = mesa.jugadores[turnoIndex];
-  const esMiTurno = jugadorEnTurno?._id?.toString() === miJugador?._id?.toString();
+  const esMiTurno = jugadorEnTurno?.nombre === miJugador?.nombre;
 
   const esDescarte = mesa.estado === "descarte";
   const esPartida = mesa.estado === "en-partida";
@@ -92,7 +94,7 @@ export function Juego() {
       <div className="mesa-poker">
         <div className="posiciones-rivales">
           {otrosJugadores.map((jugador) => {
-            const esElTurno = jugador._id?.toString() === jugadorEnTurno?._id?.toString();
+            const esElTurno = jugador.nombre === jugadorEnTurno?.nombre;
             return (
               <div
                 key={jugador.nombre}
@@ -119,8 +121,8 @@ export function Juego() {
         <div ref={mesaRef} className="mesa-oval">
           {(() => {
             const cartasEnJuego = rondaActual.length > 0 ? rondaActual : (resultadoRonda?.cartasJugadas || []);
-            const cartasRivales = cartasEnJuego.filter(j => j.nombre !== nombreJugador);
-            const miCarta = cartasEnJuego.find(j => j.nombre === nombreJugador);
+            const cartasRivales = cartasEnJuego.filter(j => j.nombre !== nombre);
+            const miCarta = cartasEnJuego.find(j => j.nombre === nombre);
 
             return (
               <>

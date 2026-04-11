@@ -1,5 +1,10 @@
 import { Schema, Types, model } from "mongoose";
 const jugadorSchema = new Schema({
+    email: {
+        type: String,
+        unique: true,
+        required: true
+    },
     nombre: {
         type: String,
         unique: true,
@@ -7,7 +12,11 @@ const jugadorSchema = new Schema({
     },
     password: {
         type: String,
-        required: true
+        required: false
+    },
+    googleId: {
+        type: String,
+        default: null
     },
     puntosGlobales: {
         type: Number,

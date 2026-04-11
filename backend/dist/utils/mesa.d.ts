@@ -1,7 +1,7 @@
 import type { Jugador, Mesa } from "../interfaces.js";
 import type { DataReturn } from "../types/express.js";
-export declare function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn>;
-export declare function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn>;
+export declare function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string, password: string): Promise<DataReturn>;
+export declare function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string, password: string): Promise<DataReturn>;
 export declare function realizarDescarte(nombreJugador: string, indices: number[], nombreMesa: string, mesas: Mesa[]): DataReturn;
 export declare function descartar(mesa: Mesa, jugadores: Jugador[]): {
     ok: boolean;
@@ -22,8 +22,10 @@ export declare function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]
         jugador: Jugador;
     };
 };
-export declare function obtenerMesasLobby(): Promise<(import("mongoose").Document<unknown, {}, {
-    jugadores: import("mongoose").Types.DocumentArray<{
+export declare function obtenerMesasLobby(): Promise<{
+    tienePassword: string | null | undefined;
+    password: undefined;
+    jugadores: import("mongoose").Types.DocumentArray<import("mongoose").FlattenMaps<{
         cartas: import("mongoose").Types.DocumentArray<{
             palo?: string | null;
             numero?: number | null;
@@ -42,7 +44,7 @@ export declare function obtenerMesasLobby(): Promise<(import("mongoose").Documen
         mesaID?: string | null;
         listoParaDescartar?: boolean | null;
         puntosGlobales?: number | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+    } | {
         cartas: import("mongoose").Types.DocumentArray<{
             palo?: string | null;
             numero?: number | null;
@@ -61,7 +63,9 @@ export declare function obtenerMesasLobby(): Promise<(import("mongoose").Documen
         mesaID?: string | null;
         listoParaDescartar?: boolean | null;
         puntosGlobales?: number | null;
-    }> & {
+        _id: string;
+        __v: number;
+    } | {
         cartas: import("mongoose").Types.DocumentArray<{
             palo?: string | null;
             numero?: number | null;
@@ -80,39 +84,163 @@ export declare function obtenerMesasLobby(): Promise<(import("mongoose").Documen
         mesaID?: string | null;
         listoParaDescartar?: boolean | null;
         puntosGlobales?: number | null;
-    }>;
-    mazo: import("mongoose").Types.DocumentArray<{
+        _id: string;
+        __v: number;
+    }>, import("mongoose").Types.Subdocument<string | import("bson").ObjectId, any, import("mongoose").FlattenMaps<{
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+    } | {
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+        _id: string;
+        __v: number;
+    } | {
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+        _id: string;
+        __v: number;
+    }>> & import("mongoose").FlattenMaps<{
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+    } | {
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+        _id: string;
+        __v: number;
+    } | {
+        cartas: import("mongoose").Types.DocumentArray<{
+            palo?: string | null;
+            numero?: number | null;
+        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+            palo?: string | null;
+            numero?: number | null;
+        }> & {
+            palo?: string | null;
+            numero?: number | null;
+        }>;
+        descarte: number[];
+        nombre?: string | null;
+        puntos?: number | null;
+        posicionMesa?: number | null;
+        ready?: boolean | null;
+        mesaID?: string | null;
+        listoParaDescartar?: boolean | null;
+        puntosGlobales?: number | null;
+        _id: string;
+        __v: number;
+    }>>;
+    mazo: import("mongoose").Types.DocumentArray<import("mongoose").FlattenMaps<{
         nombre?: string | null;
         palo?: string | null;
         numero?: number | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+    }>, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, import("mongoose").FlattenMaps<{
         nombre?: string | null;
         palo?: string | null;
         numero?: number | null;
-    }> & {
+    }>> & import("mongoose").FlattenMaps<{
         nombre?: string | null;
         palo?: string | null;
         numero?: number | null;
-    }>;
-    cartasPorRonda: import("mongoose").Types.DocumentArray<{
+    }>>;
+    cartasPorRonda: import("mongoose").Types.DocumentArray<import("mongoose").FlattenMaps<{
         nombre?: string | null;
         carta?: {
             palo?: string | null;
             numero?: number | null;
         } | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
+    }>, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, import("mongoose").FlattenMaps<{
         nombre?: string | null;
         carta?: {
             palo?: string | null;
             numero?: number | null;
         } | null;
-    }> & {
+    }>> & import("mongoose").FlattenMaps<{
         nombre?: string | null;
         carta?: {
             palo?: string | null;
             numero?: number | null;
         } | null;
-    }>;
+    }>>;
     ganadoresRonda: string[];
     estado?: string | null;
     fase?: string | null;
@@ -122,111 +250,9 @@ export declare function obtenerMesasLobby(): Promise<(import("mongoose").Documen
     ronda?: number | null;
     nombre?: string | null;
     inicioRonda?: number | null;
-}, {}, import("mongoose").DefaultSchemaOptions> & {
-    jugadores: import("mongoose").Types.DocumentArray<{
-        cartas: import("mongoose").Types.DocumentArray<{
-            palo?: string | null;
-            numero?: number | null;
-        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-            palo?: string | null;
-            numero?: number | null;
-        }> & {
-            palo?: string | null;
-            numero?: number | null;
-        }>;
-        descarte: number[];
-        nombre?: string | null;
-        puntos?: number | null;
-        posicionMesa?: number | null;
-        ready?: boolean | null;
-        mesaID?: string | null;
-        listoParaDescartar?: boolean | null;
-        puntosGlobales?: number | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-        cartas: import("mongoose").Types.DocumentArray<{
-            palo?: string | null;
-            numero?: number | null;
-        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-            palo?: string | null;
-            numero?: number | null;
-        }> & {
-            palo?: string | null;
-            numero?: number | null;
-        }>;
-        descarte: number[];
-        nombre?: string | null;
-        puntos?: number | null;
-        posicionMesa?: number | null;
-        ready?: boolean | null;
-        mesaID?: string | null;
-        listoParaDescartar?: boolean | null;
-        puntosGlobales?: number | null;
-    }> & {
-        cartas: import("mongoose").Types.DocumentArray<{
-            palo?: string | null;
-            numero?: number | null;
-        }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-            palo?: string | null;
-            numero?: number | null;
-        }> & {
-            palo?: string | null;
-            numero?: number | null;
-        }>;
-        descarte: number[];
-        nombre?: string | null;
-        puntos?: number | null;
-        posicionMesa?: number | null;
-        ready?: boolean | null;
-        mesaID?: string | null;
-        listoParaDescartar?: boolean | null;
-        puntosGlobales?: number | null;
-    }>;
-    mazo: import("mongoose").Types.DocumentArray<{
-        nombre?: string | null;
-        palo?: string | null;
-        numero?: number | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-        nombre?: string | null;
-        palo?: string | null;
-        numero?: number | null;
-    }> & {
-        nombre?: string | null;
-        palo?: string | null;
-        numero?: number | null;
-    }>;
-    cartasPorRonda: import("mongoose").Types.DocumentArray<{
-        nombre?: string | null;
-        carta?: {
-            palo?: string | null;
-            numero?: number | null;
-        } | null;
-    }, import("mongoose").Types.Subdocument<import("bson").ObjectId, any, {
-        nombre?: string | null;
-        carta?: {
-            palo?: string | null;
-            numero?: number | null;
-        } | null;
-    }> & {
-        nombre?: string | null;
-        carta?: {
-            palo?: string | null;
-            numero?: number | null;
-        } | null;
-    }>;
-    ganadoresRonda: string[];
-    estado?: string | null;
-    fase?: string | null;
-    triunfo?: string | null;
-    turnoActual?: number | null;
-    repartidor?: number | null;
-    ronda?: number | null;
-    nombre?: string | null;
-    inicioRonda?: number | null;
-} & {
     _id: import("mongoose").Types.ObjectId;
-} & {
     __v: number;
-})[]>;
+}[]>;
 export declare function obtenerMesaDeJuego(nombreMesa: string): Promise<{
     ok: boolean;
     msg: string;
@@ -332,6 +358,7 @@ export declare function obtenerMesaDeJuego(nombreMesa: string): Promise<{
         turnoActual?: number | null;
         repartidor?: number | null;
         ronda?: number | null;
+        password?: string | null;
         nombre?: string | null;
         inicioRonda?: number | null;
     }, {}, import("mongoose").DefaultSchemaOptions> & {
@@ -432,6 +459,7 @@ export declare function obtenerMesaDeJuego(nombreMesa: string): Promise<{
         turnoActual?: number | null;
         repartidor?: number | null;
         ronda?: number | null;
+        password?: string | null;
         nombre?: string | null;
         inicioRonda?: number | null;
     } & {

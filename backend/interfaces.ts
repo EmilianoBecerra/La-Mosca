@@ -13,7 +13,8 @@ export interface Mesa {
   repartidor: number,
   cartasPorRonda: { nombre: string, carta: Carta }[],
   ganadoresRonda: string[],
-  ronda: number
+  ronda: number,
+  password?: string
 }
 
 

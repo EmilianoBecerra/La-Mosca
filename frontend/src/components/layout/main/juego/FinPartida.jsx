@@ -4,7 +4,7 @@ import { Buttons } from "../../../parts/Buttons";
 import "./FinPartida.css";
 
 export function FinPartida() {
-    const { finPartida, setEstadoPantalla, setFinPartida, salirMesa, nombreJugador } = useContext(GlobalContext);
+    const { finPartida, setEstadoPantalla, setFinPartida, socketRef, nombreJugador } = useContext(GlobalContext);
 
     if (!finPartida) return null;
 
@@ -12,7 +12,7 @@ export function FinPartida() {
     const jugadoresOrdenados = [...finPartida.jugadores].sort((a, b) => a.puntos - b.puntos);
 
     const handleSalir = () => {
-        salirMesa();
+        socketRef.current.emit("salir-mesa", nombreJugador);
         setFinPartida(null);
         setEstadoPantalla("lobby");
     };

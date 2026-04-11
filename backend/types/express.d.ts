@@ -1,4 +1,5 @@
-import type { Jwt, JwtPayload } from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
+import type { Mesa, Jugador } from "../interfaces.js";
 
 declare module "express-serve-static-core" {
   interface Request {

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "./Mesa.css";
 import { GlobalContext } from "../../../../context/GlobalContext";
 import { Buttons } from "../../../parts/Buttons";
@@ -14,16 +14,49 @@ const getEmojiForPlayer = (nombre) => {
 };
 
 export function Mesa() {
-  const { mesa, nombreJugador, jugadorListo, salirMesa } = useContext(GlobalContext);
-
+  const { mesa, socketRef, setMesa } = useContext(GlobalContext);
+  const nombre = localStorage.getItem("nombreJugador");
   const handleListo = () => {
-    jugadorListo();
+    if (nombre) {
+      socketRef.current.emit("jugador-listo", nombre);
+    }
   };
 
   const handleSalir = () => {
-    salirMesa();
+    if (nombre) {
+      socketRef.current.emit("salir-mesa", nombre);
+    }
   };
 
+  useEffect(() => {
+    const socket = socketRef.current;
+
+    socket.on("jugador-nuevo", (jugador) => {
+      setMesa(prev => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          jugadores: [...(prev.jugadores || []), jugador]
+        }
+      })
+    })
+
+    socket.on("jugador-salio", ({ mesa: mesaActualizada }) => {
+      setMesa(mesaActualizada);
+    })
+
+    return () => {
+      socket.off("jugador-nuevo");
+      socket.off("jugador-salio");
+    };
+
+  }, [socketRef, setMesa])
+
+  const miJugador = mesa.jugadores.find(j => j.nombre === nombre);
+  const jugadoresListos = mesa.jugadores.filter(j => j.ready).length;
+  const totalJugadores = mesa.jugadores.length;
+  const puedeIniciar = totalJugadores >= 2;
+  const todosListos = jugadoresListos === totalJugadores && puedeIniciar;
   if (!mesa) {
     return (
       <div className="mesa-loading">
@@ -32,13 +65,6 @@ export function Mesa() {
       </div>
     );
   }
-
-  const miJugador = mesa.jugadores.find(j => j.nombre === nombreJugador);
-  const jugadoresListos = mesa.jugadores.filter(j => j.ready).length;
-  const totalJugadores = mesa.jugadores.length;
-  const puedeIniciar = totalJugadores >= 2;
-  const todosListos = jugadoresListos === totalJugadores && puedeIniciar;
-
   return (
     <div className="mesa sala-espera">
       <div className="mesa-header">
@@ -64,7 +90,7 @@ export function Mesa() {
 
       <div className="jugadores-grid">
         {mesa.jugadores.map((jugador) => {
-          const esYo = jugador.nombre === nombreJugador;
+          const esYo = jugador.nombre === nombre;
           return (
             <div
               key={jugador.nombre}

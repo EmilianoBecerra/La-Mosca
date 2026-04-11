@@ -9,10 +9,23 @@ import type { Jugador, Mesa } from "./interfaces.js";
 import { buscarMesaDeJugador, obtenerMesasLobby, obtenerTodasLasMesas } from "./utils/mesa.js";
 import { GeneralController } from "./socket/GeneralController.js";
 import authRoutes from "./routes/auth.js";
+import "./config/passport.js";
 import jwt, { type JwtPayload, type VerifyErrors } from "jsonwebtoken";
 import compression from "compression";
+import cookieParser from 'cookie-parser';
+import session from "express-session";
+import passport from "passport";
 
 const app = express();
+
+app.use(cookieParser());
+app.use(session({
+  secret: process.env.PRIVATE_KEY || "session_secret",
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false }
+}));
+app.use(passport.initialize());
 const server = createServer(app);
 const PORT = Number(process.env.PORT) || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
@@ -25,8 +38,9 @@ const io = new Server(server, {
 app.use(compression());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", CORS_ORIGIN);
+  res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Methods", "POST");
+  res.header("Access-Control-Allow-Methods", "GET, POST");
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
@@ -40,7 +54,6 @@ app.use("/auth", authRoutes);
 async function iniciarServidor() {
   try {
     await conectarDB();
-    console.log("Base de datos conectada");
   } catch (error) {
     console.error("No se pudo conectar a la BD");
   }
@@ -51,6 +64,7 @@ async function iniciarServidor() {
   const mesaController = new MesaController(io, mesas, jugadoresConectados);
   const partidaController = new PartidaController(io, mesas, jugadoresConectados);
   const generalController = new GeneralController(io, mesas, jugadoresConectados);
+
   const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
   io.use((socket, next) => {
@@ -72,25 +86,24 @@ async function iniciarServidor() {
       const mesasLobby = await obtenerMesasLobby();
       socket.emit("mesas-disponibles", mesasLobby);
     });
-    
+    mesaController.registrar(socket);
+    partidaController.registrar(socket);
+    generalController.registrar(socket);
+
     const nombre = socket.data.nombre;
     const windowId = socket.data.windowId;
+
     if (nombre) {
       const existente = jugadoresConectados.find(j => j.nombre === nombre);
-      if (existente && existente.windowId !== windowId) {
-        if (existente.socketId) {
-          io.to(existente.socketId).emit("otra-ventana");
-          existente.socketId = socket.id;
-          existente.windowId = windowId;
-        }
+      if (existente && existente.windowId !== windowId && existente.socketId) {
+        io.to(existente.socketId).emit("otra-ventana");
+        existente.socketId = socket.id;
+        existente.windowId = windowId;
       } else if (existente) {
-        if (existente.socketId) {
-          existente.socketId = socket.id;
-        }
+        existente.socketId = socket.id;
       } else {
         jugadoresConectados.push({ nombre, socketId: socket.id, windowId });
       }
-
       const resultado = buscarMesaDeJugador(nombre, mesas);
       if (resultado.data) {
         const { mesa } = resultado.data;
@@ -99,36 +112,10 @@ async function iniciarServidor() {
           socket.emit("reconectar-partida", mesa);
         }
       }
-    }
-    obtenerMesasLobby().then(mesasLobby => {
-      socket.emit("mesas-disponibles", mesasLobby);
-    });
-    mesaController.registrar(socket);
-    partidaController.registrar(socket);
-    generalController.registrar(socket);
-
-
-
-    socket.on("autenticar", (token: string) => {
-      if (!token || !PRIVATE_KEY) return;
-      jwt.verify(token, PRIVATE_KEY, (error: VerifyErrors | null, decoded: JwtPayload | string | undefined) => {
-        if (error) return;
-        const payload = decoded as JwtPayload;
-        const nombre = payload.nombre;
-        socket.data.nombre = nombre;
-
-        const existente = jugadoresConectados.find(j => j.nombre === nombre);
-        if (existente && existente.windowId !== windowId && existente.socketId) {
-          io.to(existente.socketId).emit("otra-ventana");
-          existente.socketId = socket.id;
-          existente.windowId = windowId;
-        } else if (existente) {
-          existente.socketId = socket.id;
-        } else {
-          jugadoresConectados.push({ nombre, socketId: socket.id, windowId });
-        }
+      obtenerMesasLobby().then(mesasLobby => {
+        socket.emit("mesas-disponibles", mesasLobby);
       });
-    });
+    }
 
     socket.on("disconnect", () => {
       const index = jugadoresConectados.findIndex(j => j.socketId === socket.id);

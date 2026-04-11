@@ -6,8 +6,8 @@ export declare class MesaController {
     jugadoresConectados: Jugador[];
     constructor(io: Server, mesas: Mesa[], jugadoresConectados: Jugador[]);
     registrar(socket: Socket): void;
-    crearNuevaMesa(socket: Socket, nombreJugador: string, nombreMesa: string): Promise<void>;
-    sumarJugador(socket: Socket, nombreJugador: string, nombreMesa: string): Promise<void>;
+    crearNuevaMesa(socket: Socket, nombreJugador: string, nombreMesa: string, password: string): Promise<void>;
+    sumarJugador(socket: Socket, nombreJugador: string, nombreMesa: string, password: string): Promise<void>;
     jugadorListo(socket: Socket, nombreJugador: string): Promise<void>;
     iniciarPartida(socket: Socket, mesa: Mesa): Promise<void>;
     recibirDescarte(socket: Socket, nombreJugador: string, indices: number[], nombreMesa: string): Promise<void>;

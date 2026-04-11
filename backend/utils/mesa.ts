@@ -5,12 +5,15 @@ import { descartarCartas } from "./cartas.js";
 
 
 
-export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn> {
+export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas: Mesa[], id: string, password: string): Promise<DataReturn> {
+  if (nombreMesa.length > 15) {
+    return { ok: false, msg: "El nombre supera el límite de caracteres" };
+  }
   try {
     await obtenerTodasLasMesas(mesas);
   } catch (error) {
     console.error("Error al obtener las mesas de la DB");
-    return { ok: false, msg: "Error al obtener las mesas de la DB" }
+    return { ok: false, msg: "Error al obtener las mesas de la DB" };
   }
   const mesaExistente = mesas.find(m =>
     m.jugadores.some(j => j.nombre === nombreJugador)
@@ -21,6 +24,7 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
   if (mesas.find(m => m.nombre === nombreMesa)) {
     return { ok: false, msg: "Ya existe una mesa con ese nombre" };
   }
+
   const nuevaMesa: Mesa = {
     nombre: nombreMesa,
     estado: "esperando-jugadores",
@@ -43,8 +47,10 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
     repartidor: 0,
     cartasPorRonda: [],
     ganadoresRonda: [],
-    ronda: 0
+    ronda: 0,
+    password
   };
+
   try {
     await mesaModel.create(nuevaMesa);
   } catch (error) {
@@ -54,7 +60,7 @@ export async function crearMesa(nombreJugador: string, nombreMesa: string, mesas
   return { ok: true, msg: "Mesa creada", data: { mesa: nuevaMesa } };
 }
 
-export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string): Promise<DataReturn> {
+export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], nombreMesa: string, mesas: Mesa[], id: string, password: string): Promise<DataReturn> {
   try {
     await obtenerTodasLasMesas(mesas);
   } catch (error) {
@@ -63,12 +69,14 @@ export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], n
   }
   const mesaActual = mesas.find(m => m.nombre === nombreMesa);
   const jugador = jugadores.find(j => j.nombre === nombreJugador);
-
   if (!mesaActual) {
     return { ok: false, msg: `El nombre de la mesa es incorrecto ${nombreMesa}` };
   }
   if (!jugador) {
-    return { ok: false, msg: `El nombre del jugador es incorrecto ${nombreJugador}` };
+    return { ok: false, msg: `El nombre del jugador es incorrecto.` };
+  }
+  if (mesaActual?.password !== password) {
+    return { ok: false, msg: "Contraseña para ingresar incorrecta" };
   }
   if (jugador.mesaID && mesaActual.nombre !== jugador.mesaID) {
     const mesa = mesas.find(m => m.nombre === jugador.mesaID);
@@ -111,6 +119,7 @@ export async function unirseAMesa(nombreJugador: string, jugadores: Jugador[], n
   }
   mesaActual.jugadores.push(nuevoJugador);
   return { ok: true, msg: "Te uniste a la mesa", data: { mesa: mesaActual, jugador: nuevoJugador } };
+
 };
 
 export function realizarDescarte(nombreJugador: string, indices: number[], nombreMesa: string, mesas: Mesa[]): DataReturn {
@@ -202,6 +211,7 @@ export async function obtenerTodasLasMesas(mesas: Mesa[]) {
   }
 }
 
+
 export function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]) {
   const mesa = mesas.find(m =>
     m.jugadores.some(j => j.nombre === nombreJugador)
@@ -217,8 +227,12 @@ export function buscarMesaDeJugador(nombreJugador: string, mesas: Mesa[]) {
 }
 
 export async function obtenerMesasLobby() {
-  const mesasLobby = mesaModel.find().select("nombre estado jugadores.nombre jugadores.puntos");
-  return mesasLobby;
+  const mesasDB = await mesaModel.find().select("nombre estado jugadores.nombre jugadores.puntos password").lean();
+  return mesasDB.map(mesa => ({
+    ...mesa,
+    tienePassword: mesa.password,
+    password: undefined
+  }));
 };
 
 export async function obtenerMesaDeJuego(nombreMesa: string) {

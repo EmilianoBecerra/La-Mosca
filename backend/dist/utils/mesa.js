@@ -1,6 +1,9 @@
 import { mesaModel } from "../model/mesasModel.js";
 import { descartarCartas } from "./cartas.js";
-export async function crearMesa(nombreJugador, nombreMesa, mesas, id) {
+export async function crearMesa(nombreJugador, nombreMesa, mesas, id, password) {
+    if (nombreMesa.length > 15) {
+        return { ok: false, msg: "El nombre supera el límite de caracteres" };
+    }
     try {
         await obtenerTodasLasMesas(mesas);
     }
@@ -37,7 +40,8 @@ export async function crearMesa(nombreJugador, nombreMesa, mesas, id) {
         repartidor: 0,
         cartasPorRonda: [],
         ganadoresRonda: [],
-        ronda: 0
+        ronda: 0,
+        password
     };
     try {
         await mesaModel.create(nuevaMesa);
@@ -48,7 +52,7 @@ export async function crearMesa(nombreJugador, nombreMesa, mesas, id) {
     }
     return { ok: true, msg: "Mesa creada", data: { mesa: nuevaMesa } };
 }
-export async function unirseAMesa(nombreJugador, jugadores, nombreMesa, mesas, id) {
+export async function unirseAMesa(nombreJugador, jugadores, nombreMesa, mesas, id, password) {
     try {
         await obtenerTodasLasMesas(mesas);
     }
@@ -62,7 +66,10 @@ export async function unirseAMesa(nombreJugador, jugadores, nombreMesa, mesas, i
         return { ok: false, msg: `El nombre de la mesa es incorrecto ${nombreMesa}` };
     }
     if (!jugador) {
-        return { ok: false, msg: `El nombre del jugador es incorrecto ${nombreJugador}` };
+        return { ok: false, msg: `El nombre del jugador es incorrecto.` };
+    }
+    if (mesaActual?.password !== password) {
+        return { ok: false, msg: "Contraseña para ingresar incorrecta" };
     }
     if (jugador.mesaID && mesaActual.nombre !== jugador.mesaID) {
         const mesa = mesas.find(m => m.nombre === jugador.mesaID);
@@ -215,8 +222,12 @@ export function buscarMesaDeJugador(nombreJugador, mesas) {
     return { ok: true, msg: "Mesa encontrada", data: { mesa, jugador } };
 }
 export async function obtenerMesasLobby() {
-    const mesasLobby = mesaModel.find().select("nombre estado jugadores.nombre jugadores.puntos");
-    return mesasLobby;
+    const mesasDB = await mesaModel.find().select("nombre estado jugadores.nombre jugadores.puntos password").lean();
+    return mesasDB.map(mesa => ({
+        ...mesa,
+        tienePassword: mesa.password,
+        password: undefined
+    }));
 }
 ;
 export async function obtenerMesaDeJuego(nombreMesa) {

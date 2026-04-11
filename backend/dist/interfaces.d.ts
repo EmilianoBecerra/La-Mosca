@@ -16,6 +16,7 @@ export interface Mesa {
     }[];
     ganadoresRonda: string[];
     ronda: number;
+    password?: string;
 }
 export interface Jugador {
     nombre: string;

@@ -31,7 +31,6 @@ export class PartidaController {
                 if (resultado.data?.mesa) {
                     const mesa = resultado.data.mesa;
                     mesa.turnoActual++;
-                    //this.io.to(nombreMesa).emit("actualizar-mesa", mesa);
                     if (mesa.cartasPorRonda.length === mesa.jugadores.length) {
                         const { nombreGanador, carta } = determinarGanador(mesa.cartasPorRonda, mesa.triunfo);
                         if (nombreGanador) {

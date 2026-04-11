@@ -1,85 +1,152 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./Lobby.css";
 import { GlobalContext } from "../../../../context/GlobalContext";
 import { Buttons } from "../../../parts/Buttons";
 
 export function Lobby() {
-    const { mesas, unirseMesa, setEstadoPantalla } = useContext(GlobalContext);
+  const { setEstadoPantalla, socketRef } = useContext(GlobalContext);
+  const [mesas, setMesas] = useState([])
+  const [mesaPidiendoPassword, setMesaPidiendoPassword] = useState(null);
+  const [passwordInput, setPasswordInput] = useState("");
 
-    const mesasDisponibles = mesas.filter(m =>
-        m.estado === "esperando-jugadores" && m.jugadores.length < 4
-    );
 
-    const handleClick = (mesa) => {
-        unirseMesa(mesa.nombre);
-    };
+  const mesasDisponibles = mesas.filter(m =>
+    m.estado === "esperando-jugadores" && m.jugadores.length < 4
+  );
 
-    return (
-        <div className="lobby">
-            <div className="lobby-header">
-                <h2>Mesas Disponibles</h2>
-                <div className="lobby-actions">
-                    <button
-                        className="btn-instrucciones"
-                        onClick={() => setEstadoPantalla("instrucciones")}
-                    >
-                        Instrucciones
-                    </button>
-                    <button
-                        className="btn-crear-mesa"
-                        onClick={() => setEstadoPantalla("crear-mesa")}
-                    >
-                        Crear Mesa
-                    </button>
-                </div>
-            </div>
+  const handleClick = (mesa) => {
+    if (mesa.tienePassword && mesaPidiendoPassword !== mesa.nombre) {
+      setMesaPidiendoPassword(mesa.nombre);
+      setPasswordInput("");
+      return;
+    }
+    const nombre = localStorage.getItem("nombreJugador");
+    if (!nombre) {
+      console.error("No hay jugador registrado");
+      return;
+    }
+    socketRef.current.emit("ingresar-en-mesa", nombre, mesa.nombre, passwordInput);
+  };
 
-            {mesasDisponibles.length < 1 ? (
-                <div className="sin-mesas">
-                    <div className="sin-mesas-icon">🃏</div>
-                    <h3>No hay mesas disponibles</h3>
-                    <p>Crea una mesa nueva para comenzar a jugar</p>
-                    <Buttons
-                        label="Crear Mesa"
-                        onClick={() => setEstadoPantalla("crear-mesa")}
-                    />
-                </div>
-            ) : (
-                <div className="sala">
-                    {mesasDisponibles.map((mesa) => (
-                        <div className="mesa-card" key={mesa.nombre || mesa._id}>
-                            <div className="mesa-card-header">
-                                <span className="mesa-nombre">{mesa.nombre || "Sin nombre"}</span>
-                                <span className={`jugadores-badge ${mesa.jugadores.length >= 4 ? 'llena' : ''}`}>
-                                    {mesa.jugadores.length}/4
-                                </span>
-                            </div>
-                            <div className="mesa-card-body">
-                                <div className="mesa-info-row">
-                                    <span className="label">Creador:</span>
-                                    <span className="value">{mesa?.jugadores[0]?.nombre || "Anonimo"}</span>
-                                </div>
-                                <div className="mesa-progress">
-                                    <div
-                                        className="mesa-progress-bar"
-                                        style={{ width: `${(mesa.jugadores.length / 4) * 100}%` }}
-                                    />
-                                </div>
-                            </div>
-                            {mesa.jugadores.length < 4 ? (
-                                <Buttons
-                                    type="button"
-                                    label="Unirse"
-                                    onClick={() => handleClick(mesa)}
-                                />
-                            ) : (
-                                <span className="mesa-llena-text">Mesa Llena</span>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
+  useEffect(() => {
+    const socket = socketRef.current;
+    socket.on("connect", () => {
+      socket.emit("pedir-mesas");
+    });
 
+    if (socket.connected) {
+      socket.emit("pedir-mesas");
+    }
+
+    socket.on("mesas-disponibles", (mesas) => {
+      setMesas(mesas);
+    })
+
+    socket.on("jugador-enMesa", (mesa) => {
+      if (mesa) {
+        setEstadoPantalla("mesa");
+      }
+    })
+
+    return () => {
+      socket.off("mesas-disponibles");
+      socket.off("jugador-enMesa");
+      socket.off("connect");
+    }
+  }, [])
+
+  return (
+    <div className="lobby">
+      <div className="lobby-header">
+        <h2>Mesas Disponibles</h2>
+        <div className="lobby-actions">
+          <button
+            className="btn-instrucciones"
+            onClick={() => setEstadoPantalla("instrucciones")}
+          >
+            Instrucciones
+          </button>
+          <button
+            className="btn-crear-mesa"
+            onClick={() => setEstadoPantalla("crear-mesa")}
+          >
+            Crear Mesa
+          </button>
         </div>
-    );
+      </div>
+
+      {mesasDisponibles.length < 1 ? (
+        <div className="sin-mesas">
+          <div className="sin-mesas-icon">🃏</div>
+          <h3>No hay mesas disponibles</h3>
+          <p>Crea una mesa nueva para comenzar a jugar</p>
+          <Buttons
+            label="Crear Mesa"
+            onClick={() => setEstadoPantalla("crear-mesa")}
+          />
+        </div>
+      ) : (
+        <div className="sala">
+          {mesasDisponibles.map((mesa) => (
+            <div className="mesa-card" key={mesa.nombre || mesa._id}>
+              <div className="mesa-card-header">
+                <span className="mesa-nombre">{mesa.nombre || "Sin nombre"}</span>
+                <span className={`jugadores-badge ${mesa.jugadores.length >= 4 ? 'llena' : ''}`}>
+                  {mesa.jugadores.length}/4
+                </span>
+              </div>
+              <div className="mesa-card-body">
+                <div className="mesa-info-row">
+                  <span className="label">Creador:</span>
+                  <span className="value">{mesa?.jugadores[0]?.nombre || "Anonimo"}</span>
+                </div>
+                <div className="mesa-progress">
+                  <div
+                    className="mesa-progress-bar"
+                    style={{ width: `${(mesa.jugadores.length / 4) * 100}%` }}
+                  />
+                </div>
+              </div>
+              {mesa.jugadores.length < 4 ? (
+                <Buttons
+                  type="button"
+                  label="Unirse"
+                  onClick={() => handleClick(mesa)}
+                />
+              ) : (
+                <span className="mesa-llena-text">Mesa Llena</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {mesaPidiendoPassword && (
+        <div className="modal-overlay" onClick={() => setMesaPidiendoPassword(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Mesa privada</h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const mesa = mesas.find(m => m.nombre === mesaPidiendoPassword);
+              if (mesa) handleClick(mesa);
+            }}>
+              <input
+                type="password"
+                placeholder="Contraseña de la mesa"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                autoFocus
+              />
+              <div className="modal-actions">
+                <button type="button" className="btn-cancelar" onClick={() => setMesaPidiendoPassword(null)}>
+                  Cancelar
+                </button>
+                <Buttons type="submit" label="Entrar" />
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

@@ -97,6 +97,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 }, {}, {}, {}, import("mongoose").Document<unknown, {}, {
@@ -197,6 +198,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 }, {}, import("mongoose").DefaultSchemaOptions> & {
@@ -297,6 +299,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 } & {
@@ -401,6 +404,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 }, import("mongoose").Document<unknown, {}, import("mongoose").FlatRecord<{
@@ -501,6 +505,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 }>, {}, import("mongoose").ResolveSchemaOptions<import("mongoose").DefaultSchemaOptions>> & import("mongoose").FlatRecord<{
@@ -601,6 +606,7 @@ export declare const mesaModel: import("mongoose").Model<{
     turnoActual?: number | null;
     repartidor?: number | null;
     ronda?: number | null;
+    password?: string | null;
     nombre?: string | null;
     inicioRonda?: number | null;
 }> & {

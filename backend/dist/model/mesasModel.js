@@ -44,7 +44,8 @@ const mesasSchema = new Schema({
         }
     ],
     ganadoresRonda: [String],
-    ronda: Number
+    ronda: Number,
+    password: String
 });
 mesasSchema.index({ "jugadores.nombre": 1 });
 mesasSchema.index({ "estado": 1 });

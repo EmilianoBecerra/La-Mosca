@@ -18,6 +18,7 @@ export class GeneralController {
             const jugadores = await devolverJugadoresRanking();
             if (!jugadores) {
                 socket.emit("error", "error al encontrar jugadores globales");
+                return;
             }
             this.io.emit("ranking-global", jugadores.data);
         }
