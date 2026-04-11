@@ -145,7 +145,7 @@ router.get( "/google/callback",
         sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
         secure: process.env.NODE_ENV === "production"
       } );
-      return res.redirect( FRONTEND_URL );
+      return res.redirect( `${FRONTEND_URL}#token=${token}` );
     } catch ( error ) {
       console.error( "Error en callback de Google:", error );
       return res.redirect( `${FRONTEND_URL}?error=server` );

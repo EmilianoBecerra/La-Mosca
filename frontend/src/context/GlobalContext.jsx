@@ -258,25 +258,37 @@ export const GlobalContextProvider = ( props ) => {
       socket.connect();
     }
 
-    fetch( `${import.meta.env.VITE_BACKEND_URL}/auth/verify`, {
-      method: "POST",
-      credentials: "include"
-    } )
-      .then( res => res.json() )
-      .then( data => {
-        if ( data.ok ) {
-          if ( data.token ) {
-            localStorage.setItem( "token", data.token );
-            autenticarSocket( data.token );
-          }
-          guardarCredenciales( data.data );
-        } else {
-          //cerrarSesion();
-        }
+    const hash = window.location.hash;
+    if ( hash.startsWith( "#token=" ) ) {
+      const tokenFromHash = hash.slice( 7 );
+      window.history.replaceState( {}, "", window.location.pathname );
+      try {
+        const payload = JSON.parse( atob( tokenFromHash.split( "." )[ 1 ] ) );
+        localStorage.setItem( "token", tokenFromHash );
+        guardarCredenciales( payload.nombre );
+        autenticarSocket( tokenFromHash );
+      } catch ( e ) {
+        console.error( "Error al procesar token de Google OAuth", e );
+      }
+    } else {
+      fetch( `${import.meta.env.VITE_BACKEND_URL}/auth/verify`, {
+        method: "POST",
+        credentials: "include"
       } )
-      .catch( () => {
-        // Error de red: no cerrar sesión, el servidor puede no estar disponible
-      } );
+        .then( res => res.json() )
+        .then( data => {
+          if ( data.ok ) {
+            if ( data.token ) {
+              localStorage.setItem( "token", data.token );
+              autenticarSocket( data.token );
+            }
+            guardarCredenciales( data.data );
+          }
+        } )
+        .catch( () => {
+          // Error de red: no cerrar sesión, el servidor puede no estar disponible
+        } );
+    }
 
     const handleReconnect = () => {
       const token = localStorage.getItem( "token" );
